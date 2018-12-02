@@ -7,6 +7,12 @@
       "label": "watch",
       "type": "shell",
       "command": "stack build --file-watch --exec \"filling-boxes-exe\""
+    },
+    {
+      "label": "toGif",
+      "type": "shell",
+      "command": "convert -delay 1x100 ./out/*.png ./out/_out.gif"
     }
+
   ]
 }

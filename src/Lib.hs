@@ -61,3 +61,11 @@ fillPixel (dx, dy)= do
     englishVermillion 1 
     rectangle originX originY 1 1
     fill
+
+{-
+  Call stack:
+    - animation
+    - call sketch ${frames} times
+    - if I could make a list of (dx, dy)'s then I could free in sublists to sketch
+    - I've been trying to do this with state but it seems to result in the incorrect semantics
+-}
