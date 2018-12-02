@@ -52,8 +52,8 @@ strokeSquare = do
     rectangle (w/5) (h/5) (3*w/5) (3*h/5)
     stroke 
 
-fillCircle :: Generate (Render ())
-fillCircle = do
+fillPixel :: Generate (Render ())
+fillPixel = do
   (World w h _) <- ask
   x <- sampleRVar $ uniform (0 :: Double) (1 :: Double)
   y <- sampleRVar $ uniform (0 :: Double) (1 :: Double)

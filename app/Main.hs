@@ -21,7 +21,7 @@ runGenerate world rng scene =
 sketch :: State Double (Generate (Render ()))
 sketch = do
   return $ do
-    rs <- sequence [bg, strokeSquare, fillCircle]
+    rs <- sequence [bg, strokeSquare, fillPixel]
     return $ foldr1 (>>) rs
 
 writeSketch :: World -> PureMT -> String -> Generate (Render ()) -> IO()
