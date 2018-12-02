@@ -52,14 +52,11 @@ strokeSquare = do
     rectangle (w/5) (h/5) (3*w/5) (3*h/5)
     stroke 
 
-fillPixel :: Generate (Render ())
-fillPixel = do
+fillPixel :: (Double, Double) -> Generate (Render ())
+fillPixel (dx, dy)= do
   (World w h _) <- ask
-  x <- sampleRVar $ uniform (0 :: Double) (1 :: Double)
-  y <- sampleRVar $ uniform (0 :: Double) (1 :: Double)
-  let originX = (w/5) + x*(3*w/5)
-  let originY = (h/5) + y*(3*h/5)
-  let cy = y*(h/4) + (h/2)
+  let originX = (w/5) + dx*(3*w/5)
+  let originY = (h/5) + dy*(3*h/5)
   return $ do
     englishVermillion 1 
     rectangle originX originY 1 1
