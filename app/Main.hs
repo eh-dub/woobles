@@ -19,12 +19,11 @@ runGenerate :: World -> PureMT -> Generate a -> a
 runGenerate world rng scene = 
   (flip runReader world) . (>>= (return . fst)) . (flip runStateT rng) $ scene
 
-sketch :: [(Double, Double)] -> State PureMT (Generate (Render ()))
-sketch offsets = do
-    return $ do
-      let pixels = fmap fillPixel offsets
-      rs <- sequence $ [bg] <> pixels <> [strokeSquare]
-      return $ foldr1 (>>) rs
+sketch :: [(Double, Double)] -> (Generate (Render ()))
+sketch offsets =  do
+  let pixels = fmap fillPixel offsets
+  rs <- sequence $ [bg] <> pixels <> [strokeSquare]
+  return $ foldr1 (>>) rs
 
 animation :: Int -> State PureMT [(Generate (Render()))] 
 animation frames = do
@@ -34,9 +33,10 @@ animation frames = do
   dx <- sampleRVar $ uniform (0 :: Double) (1 :: Double)  
   dy <- sampleRVar $ uniform (0 :: Double) (1 :: Double)  
  
-  sequence $ map (\f -> sketch $ take f offsets) [1 .. frames] 
-    -- offsets <- zip dxs dys
-    -- let offsets = zip dxs dys
+  -- sequence :: (Monad m, Traversable t) => t (m a) -> m (t a)
+  -- [State PureMT (Generate (Render()))] -> State PureMT [Generate Render()]
+  return $ map (\f -> sketch $ take f offsets) [1 .. frames] 
+  -- sequence $ map (\f -> sketch $ take f offsets) [1 .. frames] 
     
 
 writeSketch :: World -> PureMT -> String -> Generate (Render ()) -> IO()
@@ -63,7 +63,10 @@ main = do
   let filenames = map (\i -> "./out/" <>  (leftPad '0' 4 $ show i) <> ".png") [1 .. frames]
   foldr1 (>>) $
     map (uncurry $ writeSketch world rng) $ zip filenames $ frameRenders
-  -- writeSketch world rng "out.png" $
-  --   do evalState (sketch (0,0)) [] 
-    -- do evalState sketch rng
-  -- return ()
+
+
+
+{-
+  - create all dots before the animation 
+  - when animating, take <frames> from the list of dots
+-}
