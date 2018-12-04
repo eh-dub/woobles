@@ -52,8 +52,8 @@ strokeSquare = do
     rectangle (w/5) (h/5) (3*w/5) (3*h/5)
     stroke 
 
-fillPixel :: (Double, Double) -> Generate (Render ())
-fillPixel (dx, dy)= do
+uniformFillPixel :: (Double, Double) -> Generate (Render ())
+uniformFillPixel (dx, dy)= do
   (World w h _) <- ask
   let originX = (w/5) + dx*(3*w/5)
   let originY = (h/5) + dy*(3*h/5)
@@ -62,10 +62,19 @@ fillPixel (dx, dy)= do
     rectangle originX originY 1 1
     fill
 
+normalFillPixel :: (Double, Double) -> Generate (Render())
+normalFillPixel (dx, dy) = do
+  (World w h _) <- ask
+  -- how might I query the state of the square here?
+  let halfWidth = ((3*w/5)/2)
+  let halfHeight = ((3*h/5)/2)
+  let centerX = (w/5) + halfWidth
+  let centerY = (h/5) + halfHeight
+  return $ do
+    englishVermillion 1
+    rectangle (centerX + dx*halfWidth) (centerY + dy*halfHeight) 1 1
+    fill
+
 {-
-  Call stack:
-    - animation
-    - call sketch ${frames} times
-    - if I could make a list of (dx, dy)'s then I could free in sublists to sketch
-    - I've been trying to do this with state but it seems to result in the incorrect semantics
+  - currently
 -}

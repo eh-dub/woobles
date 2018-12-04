@@ -8,6 +8,7 @@ import qualified Data.Vector as V
 import Linear.V2
 import Data.RVar
 import Data.Random.Distribution.Uniform
+import Data.Random.Distribution.Normal
 import Data.Random.Source.PureMT
 
 
@@ -21,20 +22,21 @@ runGenerate world rng scene =
 
 sketch :: [(Double, Double)] -> (Generate (Render ()))
 sketch offsets =  do
-  let pixels = fmap fillPixel offsets
+  -- let pixels = fmap uniformFillPixel offsets
+  let pixels = fmap normalFillPixel offsets
   rs <- sequence $ [bg] <> pixels <> [strokeSquare]
   return $ foldr1 (>>) rs
 
 animation :: Int -> State PureMT [(Generate (Render()))] 
 animation frames = do
-  dxs <- sequence $ map sampleRVar $ take frames $ repeat $ uniform (0 :: Double) (1 :: Double)  
-  dys <- sequence $ map sampleRVar $ take frames $ repeat $ uniform (0 :: Double) (1 :: Double)  
+  -- would be nice to pass in the distribution as a parameter
+  -- also need the size of the square to properly calibrate the normal distribution
+  dxs <- sequence $ map sampleRVar $ take frames $ repeat $ normal 0 0.33
+  dys <- sequence $ map sampleRVar $ take frames $ repeat $ normal 0 0.33
+  -- dxs <- sequence $ map sampleRVar $ take frames $ repeat $ uniform (0 :: Double) (1 :: Double)  
+  -- dys <- sequence $ map sampleRVar $ take frames $ repeat $ uniform (0 :: Double) (1 :: Double)  
   let offsets = zip dxs dys
-  dx <- sampleRVar $ uniform (0 :: Double) (1 :: Double)  
-  dy <- sampleRVar $ uniform (0 :: Double) (1 :: Double)  
  
-  -- sequence :: (Monad m, Traversable t) => t (m a) -> m (t a)
-  -- [State PureMT (Generate (Render()))] -> State PureMT [Generate Render()]
   return $ map (\f -> sketch $ take f offsets) [1 .. frames] 
   -- sequence $ map (\f -> sketch $ take f offsets) [1 .. frames] 
     

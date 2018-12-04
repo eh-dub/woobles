@@ -11,7 +11,7 @@
     {
       "label": "toGif",
       "type": "shell",
-      "command": "convert -delay 1x100 ./out/*.png ./out/_out.gif"
+      "command": "convert -delay 1x1000 ./out/*.png ./out/_out.gif"
     }
 
   ]
