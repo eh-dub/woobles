@@ -18,23 +18,23 @@ import Control.Monad.Reader
 
 runGenerate :: World -> PureMT -> Generate a -> a
 runGenerate world rng scene = 
-  (flip runReader world) . (>>= (return . fst)) . (flip runStateT rng) $ scene
+  runReader (fmap fst $ runStateT scene rng) world
 
 sketch :: [(Double, Double)] -> (Generate (Render ()))
 sketch offsets =  do
-  -- let pixels = fmap uniformFillPixel offsets
+  -- bg
+  -- for_ offsets normalFillPixel
+  -- for_ [0.1, 0.4, 0.7] square
   let pixels = fmap normalFillPixel offsets
-  rs <- sequence $ [bg] <> pixels <> [strokeSquare]
+  rs <- sequence $ [bg] <> pixels <> fmap square [0.1, 0.4, 0.7]
   return $ foldr1 (>>) rs
 
 animation :: Int -> State PureMT [(Generate (Render()))] 
 animation frames = do
   -- would be nice to pass in the distribution as a parameter
   -- also need the size of the square to properly calibrate the normal distribution
-  dxs <- sequence $ map sampleRVar $ take frames $ repeat $ normal 0 0.33
-  dys <- sequence $ map sampleRVar $ take frames $ repeat $ normal 0 0.33
-  -- dxs <- sequence $ map sampleRVar $ take frames $ repeat $ uniform (0 :: Double) (1 :: Double)  
-  -- dys <- sequence $ map sampleRVar $ take frames $ repeat $ uniform (0 :: Double) (1 :: Double)  
+  dxs <- traverse sampleRVar $ take frames $ repeat $ normal 0 0.4
+  dys <- traverse sampleRVar $ take frames $ repeat $ normal 0 0.33
   let offsets = zip dxs dys
  
   return $ map (\f -> sketch $ take f offsets) [1 .. frames] 
@@ -59,7 +59,7 @@ leftPad c n src = (replicate (n - length src) c) ++ src
 main :: IO ()
 main = do
   rng <- newPureMT
-  let world = World 200 200 1
+  let world = World 600 200 1
   let frames = 1000
   let frameRenders = evalState (animation frames) rng
   let filenames = map (\i -> "./out/" <>  (leftPad '0' 4 $ show i) <> ".png") [1 .. frames]
