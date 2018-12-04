@@ -43,6 +43,15 @@ bg = do
     rectangle 0 0 w h
     fill
 
+square :: Double -> Generate(Render ())
+square x  = do
+  (World w h _) <- ask
+  return $ do
+    newPath
+    darkGunmetal 1
+    rectangle (x*w) (h/4) (h/2) (h/2)
+    stroke 
+
 strokeSquare :: Generate (Render ())
 strokeSquare = do
   (World w h _) <- ask
@@ -66,10 +75,10 @@ normalFillPixel :: (Double, Double) -> Generate (Render())
 normalFillPixel (dx, dy) = do
   (World w h _) <- ask
   -- how might I query the state of the square here?
-  let halfWidth = ((3*w/5)/2)
-  let halfHeight = ((3*h/5)/2)
-  let centerX = (w/5) + halfWidth
-  let centerY = (h/5) + halfHeight
+  let halfWidth = (w/2)
+  let halfHeight = (h/4)
+  let centerX = (w/2)
+  let centerY = (h/2)
   return $ do
     englishVermillion 1
     rectangle (centerX + dx*halfWidth) (centerY + dy*halfHeight) 1 1
