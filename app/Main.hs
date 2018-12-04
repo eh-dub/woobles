@@ -6,43 +6,35 @@ import Lib
 import Graphics.Rendering.Cairo
 import qualified Data.Vector as V
 import Linear.V2
-import Data.RVar
+-- import Data.RVar
+import Data.Random
+import Data.Random.Source.StdGen
 import Data.Random.Distribution.Uniform
 import Data.Random.Distribution.Normal
-import Data.Random.Source.PureMT
+-- import Data.Random.Source.PureMT
+import Data.List
 
 
 import Data.Foldable
 import Control.Monad.State
 import Control.Monad.Reader
 
-runGenerate :: World -> PureMT -> Generate a -> a
-runGenerate world rng scene = 
-  runReader (fmap fst $ runStateT scene rng) world
+-- runGenerate :: World -> PureMT -> Generate a -> a
+-- runGenerate world rng scene = 
+--   runReader (fmap fst $ runStateT scene rng) world
 
-sketch :: [(Double, Double)] -> (Generate (Render ()))
+sketch :: [(Double, Double)] -> App ()
 sketch offsets =  do
-  -- bg
-  -- for_ offsets normalFillPixel
-  -- for_ [0.1, 0.4, 0.7] square
-  let pixels = fmap normalFillPixel offsets
-  rs <- sequence $ [bg] <> pixels <> fmap square [0.1, 0.4, 0.7]
-  return $ foldr1 (>>) rs
+  bg
+  for_ offsets normalFillPixel
+  for_ [0.1, 0.4, 0.7] square
 
-animation :: Int -> State PureMT [(Generate (Render()))] 
-animation frames = do
-  -- would be nice to pass in the distribution as a parameter
-  -- also need the size of the square to properly calibrate the normal distribution
-  dxs <- traverse sampleRVar $ take frames $ repeat $ normal 0 0.4
-  dys <- traverse sampleRVar $ take frames $ repeat $ normal 0 0.33
-  let offsets = zip dxs dys
- 
-  return $ map (\f -> sketch $ take f offsets) [1 .. frames] 
-  -- sequence $ map (\f -> sketch $ take f offsets) [1 .. frames] 
+animation :: [(Double, Double)] -> [App ()]
+animation noise = 
+  fmap sketch $ inits noise
     
-
-writeSketch :: World -> PureMT -> String -> Generate (Render ()) -> IO()
-writeSketch world rng path sketch = do
+writeSketch :: World -> MyState -> String -> App a -> IO()
+writeSketch world state path sketch = do
   surface <-
     createImageSurface
       FormatARGB32
@@ -50,7 +42,7 @@ writeSketch world rng path sketch = do
       (round $ worldHeight world)
   renderWith surface $ do
     scale (scaleFactor world) (scaleFactor world)
-    runGenerate world rng sketch
+    runApp world state sketch
   surfaceWriteToPNG surface path
 
 leftPad :: Char -> Int -> String -> String
@@ -58,13 +50,21 @@ leftPad c n src = (replicate (n - length src) c) ++ src
 
 main :: IO ()
 main = do
-  rng <- newPureMT
   let world = World 600 200 1
+  let mystate = MyState
   let frames = 1000
-  let frameRenders = evalState (animation frames) rng
+  src <- newStdGen
+  let (xs, src') = runState (replicateM frames (runRVar (normal 0 0.4) StdRandom)) src
+  let ys = evalState (replicateM frames (runRVar (normal 0 0.33) StdRandom)) src'
+  let noise = zip xs ys
+
+  let frameRenders = animation noise
   let filenames = map (\i -> "./out/" <>  (leftPad '0' 4 $ show i) <> ".png") [1 .. frames]
-  foldr1 (>>) $
-    map (uncurry $ writeSketch world rng) $ zip filenames $ frameRenders
+  for_ (zip [1 .. frames] frameRenders) $ \(f, r) -> do
+    let fileName = "./out/" <>  (leftPad '0' 4 $ show f) <> ".png" 
+    writeSketch world mystate fileName r
+  pure ()
+
 
 
 
