@@ -4,24 +4,14 @@ module Main where
 import Lib
 
 import Graphics.Rendering.Cairo
-import qualified Data.Vector as V
-import Linear.V2
 -- import Data.RVar
 import Data.Random
 import Data.Random.Source.StdGen
-import Data.Random.Distribution.Uniform
-import Data.Random.Distribution.Normal
--- import Data.Random.Source.PureMT
 import Data.List
 
 
 import Data.Foldable
 import Control.Monad.State
-import Control.Monad.Reader
-
--- runGenerate :: World -> PureMT -> Generate a -> a
--- runGenerate world rng scene = 
---   runReader (fmap fst $ runStateT scene rng) world
 
 sketch :: [(Double, Double)] -> App ()
 sketch offsets =  do
@@ -34,15 +24,15 @@ animation noise =
   fmap sketch $ inits noise
     
 writeSketch :: World -> MyState -> String -> App a -> IO()
-writeSketch world state path sketch = do
+writeSketch world myState path theSketch = do
   surface <-
     createImageSurface
       FormatARGB32
       (round $ worldWidth world)
       (round $ worldHeight world)
-  renderWith surface $ do
+  _ <- renderWith surface $ do
     scale (scaleFactor world) (scaleFactor world)
-    runApp world state sketch
+    runApp world myState theSketch
   surfaceWriteToPNG surface path
 
 leftPad :: Char -> Int -> String -> String
@@ -59,7 +49,6 @@ main = do
   let noise = zip xs ys
 
   let frameRenders = animation noise
-  let filenames = map (\i -> "./out/" <>  (leftPad '0' 4 $ show i) <> ".png") [1 .. frames]
   for_ (zip [1 .. frames] frameRenders) $ \(f, r) -> do
     let fileName = "./out/" <>  (leftPad '0' 4 $ show f) <> ".png" 
     writeSketch world mystate fileName r
@@ -67,8 +56,3 @@ main = do
 
 
 
-
-{-
-  - create all dots before the animation 
-  - when animating, take <frames> from the list of dots
--}
