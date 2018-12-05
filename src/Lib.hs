@@ -10,9 +10,8 @@ import Data.Random.Distribution.Uniform
 import Data.Random.Source.PureMT
 import Linear.V2
 
+import Color
 
-import Data.Colour.RGBSpace
-import Data.Colour.RGBSpace.HSV
 import Control.Monad.State
 import Control.Monad.Reader
 import Control.Monad.Trans.RWS.Strict (RWST (..))
@@ -39,18 +38,6 @@ liftApp = App . lift
 
 type Generate a  = StateT PureMT (Reader World) a
 
-hsva :: Double -> Double -> Double -> Double -> Render ()
-hsva h s v = setSourceRGBA channelRed channelGreen channelBlue
-        where RGB{..} = hsv h s v
-
-eggshell :: Double -> Render ()
-eggshell = hsva 71 0.13 0.96
-
-darkGunmetal :: Double -> Render ()
-darkGunmetal = hsva 170 0.30 0.16
-
-englishVermillion :: Double -> Render ()
-englishVermillion = hsva 355 0.68 0.84
 
 bg :: App ()
 bg = do
