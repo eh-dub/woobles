@@ -57,7 +57,7 @@ wobbleApproxCircle (cx, cy) radius degrees = do
   liftApp $ do
     newPath
     moveTo startX startY
-    for_ [0 .. 360] $ \degree -> do
+    for_ [0 .. degrees] $ \degree -> do
     -- for_ [0, 45, 90, 135, 180, 225, 270, 315, 360] $ \degree -> do
       englishVermillion 1
       setLineWidth 5
@@ -65,12 +65,8 @@ wobbleApproxCircle (cx, cy) radius degrees = do
       let dy = radius * sin (degree * (pi / 180))
       -- trace _ ("dx: " ++ show dx) 
       let x = trace ("x = " ++ show (cx + dx)) $ (cx + dx)
-      let y = trace ("y = " ++ show (cy + dy)) $ (cy + dy)
-      -- rectangle x y 10 10
-      
+      let y = trace ("y = " ++ show (cy + dy)) $ (cy - dy)
       lineTo x y
-      -- rectangle 0 0 50 50
-      -- fill
     stroke
     
       
