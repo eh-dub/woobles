@@ -52,8 +52,9 @@ bg = do
 
 -- by the time I've set up this function for one concrete config,
 -- I should be able to right-click -> design gallery
-wobbleApproxCircle :: (Double, Double) -> Double -> Double ->  App() 
-wobbleApproxCircle (cx, cy) radius degrees = do
+
+wobbleApproxCircle :: (Double, Double) -> Double -> Double -> Double -> Double ->  App() 
+wobbleApproxCircle (cx, cy) radius degrees f m = do
   (World w h _ ) <- ask
   let startX = cx + radius
   let startY = cy
@@ -61,21 +62,26 @@ wobbleApproxCircle (cx, cy) radius degrees = do
     newPath
     moveTo startX startY
     for_ [0 .. degrees] $ \degree -> do
-    -- for_ [0, 45, 90, 135, 180, 225, 270, 315, 360] $ \degree -> do
-      englishVermillion 1
-      setLineWidth 1
+      setLineWidth 3
+      if (even $ round radius) then do
+        englishVermillion 0.5
+      else  do
+        darkGunmetal 1
       -- f(t) = R + Wcost(F*t)
-      let wobbleMagnitude = 5 
-      let f = 1
-      let wobbleX = wobbleMagnitude * cos (f*degree * (pi / 180))
-      let wobbleY = wobbleMagnitude * sin (f*degree * (pi / 180))
+      -- let wobbleMagnitude = 0.5
+      -- let f = 6
+      -- let wobbleX =  trace ("mag: " ++ (show w) ++ "      freq: " ++ (show f)) $ w * cos (f*degree * (pi / 180))
+      let wobbleX = m * cos (f*degree * (pi / 180))
+      let wobbleY = m * sin (f*degree * (pi / 180))
 
       -- trace  ("dx: " ++ (show $ radius * cos (degree * (pi / 180))) )
       let dx = radius * cos (degree * (pi / 180))
       let dy = radius * sin (degree * (pi / 180))
 
-      let x = trace ("x = " ++ show (cx + dx)) $ (cx + dx + wobbleX)
-      let y = trace ("y = " ++ show (cy + dy)) $ (cy - dy - wobbleY)
+      -- let x = trace ("x = " ++ show (cx + dx)) $ (cx + dx + wobbleX)
+      -- let y = trace ("y = " ++ show (cy + dy)) $ (cy - dy - wobbleY)
+      let x =  (cx + dx + wobbleX)
+      let y =  (cy - dy - wobbleY)
       lineTo x y
     stroke
     

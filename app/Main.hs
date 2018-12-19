@@ -8,22 +8,24 @@ import Data.Random
 import Data.Random.Source.StdGen
 import Data.List
 
+import Debug.Trace
 
 import Data.Foldable
 import Control.Monad.State
 
-
-sketch :: [(Double, Double)] -> App ()
-sketch offsets =  do
+-- this function is something I want to keep a bunch of different versions of
+-- each one represents a different project within a given environment
+-- and for each sketch the paramters to it represent an exploration
+sketch :: [Double] -> [Double] -> [Double] -> App ()
+sketch radii wobbleFs wobbleWs =  do
   bg
-  wobbleApproxCircle (250,75) 30 360
-  -- noiseMask
-  -- for_ offsets normalFillPixel
-  -- for_ [0.1, 0.4, 0.7] square
+  let circleData = zip radii $ zip wobbleFs wobbleWs
+  for_ circleData $ \(r, (f, w)) -> wobbleApproxCircle (175,125) r 360 f w
 
-animation :: [(Double, Double)] -> [App ()]
-animation noise = 
-  fmap sketch $ inits noise
+-- I want the option of animation on hand all the time
+-- animation :: [(Double, Double)] -> [App ()]
+-- animation noise = 
+--   fmap sketch $ inits noise
     
 writeSketch :: World -> MyState -> String -> App a -> IO()
 writeSketch world myState path theSketch = do
@@ -44,13 +46,15 @@ main :: IO ()
 main = do
   let world = World 300 300 1
   let mystate = MyState
-  let frames = 1
   src <- newStdGen
-  let (xs, src') = runState (replicateM frames (runRVar (normal 0 0.4) StdRandom)) src
-  let ys = evalState (replicateM frames (runRVar (normal 0 0.33) StdRandom)) src'
-  let noise = zip xs ys
 
-  let frameRenders = animation noise
+  let frames = 1
+  let radii = [1, 2, 3, 5, 8, 13, 21, 34, 55, 88, 143, 231]
+  let (wobbleFs, src') = runState (replicateM (length radii) (runRVar (uniform (0.1:: Double) 10) StdRandom)) src
+  let wobbleWs = trace (show wobbleFs) $ evalState (replicateM (length radii) (runRVar (uniform (0.1 :: Double) 5) StdRandom)) src'
+  -- let noise = zip xs ys
+  let frameRenders = [sketch radii wobbleFs wobbleWs]
+  -- let frameRenders = animation noise
   for_ (zip [1 .. frames] frameRenders) $ \(f, r) -> do
     let fileName = "./out/" <>  (leftPad '0' 4 $ show f) <> ".png" 
     writeSketch world mystate fileName r
