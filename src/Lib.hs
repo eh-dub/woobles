@@ -16,7 +16,9 @@ import Control.Monad.State
 import Control.Monad.Reader
 import Control.Monad.Trans.RWS.Strict (RWST (..))
 import Control.Monad.Trans
+import Data.Foldable
 
+import Debug.Trace
 data World = World 
   { worldWidth  :: Double
   , worldHeight :: Double
@@ -47,6 +49,50 @@ bg = do
     rectangle 0 0 w h
     fill
 
+wobbleApproxCircle :: (Double, Double) -> Double -> Double ->  App() 
+wobbleApproxCircle (cx, cy) radius degrees = do
+  (World w h _ ) <- ask
+  let startX = cx + radius
+  let startY = cy
+  liftApp $ do
+    newPath
+    moveTo startX startY
+    for_ [0 .. 360] $ \degree -> do
+    -- for_ [0, 45, 90, 135, 180, 225, 270, 315, 360] $ \degree -> do
+      englishVermillion 1
+      setLineWidth 5
+      let dx = trace ("dx: " ++ (show $ radius * cos (degree * (pi / 180))) ) radius * cos (degree * (pi / 180))
+      let dy = radius * sin (degree * (pi / 180))
+      -- trace _ ("dx: " ++ show dx) 
+      let x = trace ("x = " ++ show (cx + dx)) $ (cx + dx)
+      let y = trace ("y = " ++ show (cy + dy)) $ (cy + dy)
+      -- rectangle x y 10 10
+      
+      lineTo x y
+      -- rectangle 0 0 50 50
+      -- fill
+    stroke
+    
+      
+
+
+-- noiseMask :: App()
+-- noiseMask = do
+--   (World w h _) <- ask
+--   liftApp $ do
+--     for_ [0 .. w*h] $ \n -> do
+--       newPath
+--       hsva 90 90 90 1
+--       let x = abs (w * tan (n + 2389))
+--       let y = abs (h * tan (n + 7103))
+--       rectangle x y 50 50
+--       fill
+      -- rectangle 50 50 50 50
+      -- fill
+      -- where
+      --   x = (tan (n + 2389) * w)
+      --   y = (tan (n + 7103) * h) 
+
 square :: Double -> App ()
 square x  = do
   (World w h _) <- ask
@@ -65,6 +111,7 @@ strokeSquare = do
     rectangle (w/5) (h/5) (3*w/5) (3*h/5)
     stroke 
 
+-- Pixel Fills
 uniformFillPixel :: (Double, Double) -> App ()
 uniformFillPixel (dx, dy)= do
   (World w h _) <- ask
