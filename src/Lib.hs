@@ -49,6 +49,9 @@ bg = do
     rectangle 0 0 w h
     fill
 
+
+-- by the time I've set up this function for one concrete config,
+-- I should be able to right-click -> design gallery
 wobbleApproxCircle :: (Double, Double) -> Double -> Double ->  App() 
 wobbleApproxCircle (cx, cy) radius degrees = do
   (World w h _ ) <- ask
@@ -60,12 +63,19 @@ wobbleApproxCircle (cx, cy) radius degrees = do
     for_ [0 .. degrees] $ \degree -> do
     -- for_ [0, 45, 90, 135, 180, 225, 270, 315, 360] $ \degree -> do
       englishVermillion 1
-      setLineWidth 5
-      let dx = trace ("dx: " ++ (show $ radius * cos (degree * (pi / 180))) ) radius * cos (degree * (pi / 180))
+      setLineWidth 1
+      -- f(t) = R + Wcost(F*t)
+      let wobbleMagnitude = 5 
+      let f = 1
+      let wobbleX = wobbleMagnitude * cos (f*degree * (pi / 180))
+      let wobbleY = wobbleMagnitude * sin (f*degree * (pi / 180))
+
+      -- trace  ("dx: " ++ (show $ radius * cos (degree * (pi / 180))) )
+      let dx = radius * cos (degree * (pi / 180))
       let dy = radius * sin (degree * (pi / 180))
-      -- trace _ ("dx: " ++ show dx) 
-      let x = trace ("x = " ++ show (cx + dx)) $ (cx + dx)
-      let y = trace ("y = " ++ show (cy + dy)) $ (cy - dy)
+
+      let x = trace ("x = " ++ show (cx + dx)) $ (cx + dx + wobbleX)
+      let y = trace ("y = " ++ show (cy + dy)) $ (cy - dy - wobbleY)
       lineTo x y
     stroke
     

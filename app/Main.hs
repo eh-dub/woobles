@@ -16,7 +16,7 @@ import Control.Monad.State
 sketch :: [(Double, Double)] -> App ()
 sketch offsets =  do
   bg
-  wobbleApproxCircle (250,75) 30 90
+  wobbleApproxCircle (250,75) 30 360
   -- noiseMask
   -- for_ offsets normalFillPixel
   -- for_ [0.1, 0.4, 0.7] square
@@ -42,7 +42,7 @@ leftPad c n src = (replicate (n - length src) c) ++ src
 
 main :: IO ()
 main = do
-  let world = World 600 200 1
+  let world = World 300 300 1
   let mystate = MyState
   let frames = 1
   src <- newStdGen
