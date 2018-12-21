@@ -30,6 +30,7 @@ dependencies:
 - rvar
 - transformers
 - linear
+- time
 
 library:
   source-dirs: src

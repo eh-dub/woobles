@@ -11,6 +11,7 @@ import Data.List
 
 import Debug.Trace
 
+import  Data.Time.Clock.POSIX
 import Data.Foldable
 import Control.Monad.State
 
@@ -47,7 +48,8 @@ main :: IO ()
 main = do
   let world = World 300 300 1
   let mystate = MyState
-  src <- newStdGen
+  seed <- round . (*1000) <$> getPOSIXTime
+  let src = mkStdGen seed
 
   let frames = 25
   let radii = [1 :: Double, 2, 3, 5, 8, 13, 21, 34, 55, 88, 143, 231]
@@ -55,7 +57,6 @@ main = do
   let (wobbleFs, src') = runState (replicateM (length radii) (runRVar (uniform (0.1:: Double) 10) StdRandom)) src
   let wobbleMs = evalState (replicateM (length radii) (runRVar (uniform (0.1 :: Double) 5) StdRandom)) src'
 
-  -- let frameRenders = [sketch radii wobbleFs wobbleMs]
   let circleData = zip radii $ zip wobbleFs wobbleMs
   let frameRenders = animation $ fmap (\t -> growCircles t circleData)  [0 .. frames]
   for_ (zip [1 .. frames] frameRenders) $ \(f, r) -> do
@@ -71,6 +72,9 @@ growCircles by circles =
 -- animation idea
 -- have wobbly circles grow in size  DONE
 -- and have new ones take old place
+  -- .... how would you even...
+  -- how determine when a new circle needs to be made?
+  -- 
 
 -- how can we write less code to explore alternatives
 
