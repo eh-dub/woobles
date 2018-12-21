@@ -8,6 +8,7 @@ import Data.Random
 import Data.Random.Source.StdGen
 import Data.List
 
+
 import Debug.Trace
 
 import Data.Foldable
@@ -16,16 +17,16 @@ import Control.Monad.State
 -- this function is something I want to keep a bunch of different versions of
 -- each one represents a different project within a given environment
 -- and for each sketch the paramters to it represent an exploration
-sketch :: [Double] -> [Double] -> [Double] -> App ()
-sketch radii wobbleFs wobbleWs =  do
+sketch :: [(Double, (Double, Double))] -> App ()
+sketch circleData =  do
   bg
-  let circleData = zip radii $ zip wobbleFs wobbleWs
-  for_ circleData $ \(r, (f, w)) -> wobbleApproxCircle (175,125) r 360 f w
+  -- let circleData = zip radii $ zip wobbleFs wobbleMs
+  trace (show circleData) $ for_ circleData $ \(r, (f, m)) -> wobbleApproxCircle (175,125) r 360 f m
 
 -- I want the option of animation on hand all the time
--- animation :: [(Double, Double)] -> [App ()]
--- animation noise = 
---   fmap sketch $ inits noise
+animation :: [[(Double, (Double, Double))]] -> [App ()]
+animation circles = 
+  fmap sketch circles
     
 writeSketch :: World -> MyState -> String -> App a -> IO()
 writeSketch world myState path theSketch = do
@@ -48,18 +49,30 @@ main = do
   let mystate = MyState
   src <- newStdGen
 
-  let frames = 1
-  let radii = [1, 2, 3, 5, 8, 13, 21, 34, 55, 88, 143, 231]
+  let frames = 25
+  let radii = [1 :: Double, 2, 3, 5, 8, 13, 21, 34, 55, 88, 143, 231]
+  
   let (wobbleFs, src') = runState (replicateM (length radii) (runRVar (uniform (0.1:: Double) 10) StdRandom)) src
-  let wobbleWs = trace (show wobbleFs) $ evalState (replicateM (length radii) (runRVar (uniform (0.1 :: Double) 5) StdRandom)) src'
-  -- let noise = zip xs ys
-  let frameRenders = [sketch radii wobbleFs wobbleWs]
-  -- let frameRenders = animation noise
+  let wobbleMs = evalState (replicateM (length radii) (runRVar (uniform (0.1 :: Double) 5) StdRandom)) src'
+
+  -- let frameRenders = [sketch radii wobbleFs wobbleMs]
+  let circleData = zip radii $ zip wobbleFs wobbleMs
+  let frameRenders = animation $ fmap (\t -> growCircles t circleData)  [0 .. frames]
   for_ (zip [1 .. frames] frameRenders) $ \(f, r) -> do
     let fileName = "./out/" <>  (leftPad '0' 4 $ show f) <> ".png" 
     writeSketch world mystate fileName r
   pure ()
 
+growCircles :: Int -> [(Double, (Double, Double))] -> [(Double, (Double, Double))]
+growCircles by circles =
+  (flip fmap) circles $ \(r, (f, m)) -> (r+(5*(fromIntegral by)), (f, m))
+
+
+-- animation idea
+-- have wobbly circles grow in size  DONE
+-- and have new ones take old place
+
+-- how can we write less code to explore alternatives
 
 
 {-
@@ -68,12 +81,6 @@ main = do
     - Can still make .png's directly through cairo and then lift them into a Diagram
     - figure out how to give the entire image a "papery" feel
     - is there a way to add paper crinkles?
-    - remaking those circles sounds fun. would be interesting to have the animation that draws it too
-      randomize the starting location to add some variety to gifs
-      and if the widths varied signifiantly
-      and maybe draw some figures with the technique
-    - step 1 generate a circle using polar coordinates
-
 -}
 
 {-

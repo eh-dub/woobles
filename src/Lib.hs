@@ -67,9 +67,7 @@ wobbleApproxCircle (cx, cy) radius degrees f m = do
         englishVermillion 0.5
       else  do
         darkGunmetal 1
-      -- f(t) = R + Wcost(F*t)
-      -- let wobbleMagnitude = 0.5
-      -- let f = 6
+      -- g(t) = R + m*cos(f*t)
       -- let wobbleX =  trace ("mag: " ++ (show w) ++ "      freq: " ++ (show f)) $ w * cos (f*degree * (pi / 180))
       let wobbleX = m * cos (f*degree * (pi / 180))
       let wobbleY = m * sin (f*degree * (pi / 180))
@@ -83,6 +81,7 @@ wobbleApproxCircle (cx, cy) radius degrees f m = do
       let x =  (cx + dx + wobbleX)
       let y =  (cy - dy - wobbleY)
       lineTo x y
+
     stroke
     
       
