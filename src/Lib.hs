@@ -52,9 +52,9 @@ bg = do
 
 -- by the time I've set up this function for one concrete config,
 -- I should be able to right-click -> design gallery
-
-wobbleApproxCircle :: (Double, Double) -> Double -> Double -> Double -> Double ->  App() 
-wobbleApproxCircle (cx, cy) radius degrees f m = do
+type Wobble = (Double, Double)
+wobbleApproxCircle :: (Double, Double) -> Double -> Double -> Wobble ->  App() 
+wobbleApproxCircle (cx, cy) radius degrees (f, m) = do
   (World w h _ ) <- ask
   let startX = cx + radius
   let startY = cy
