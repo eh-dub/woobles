@@ -1,45 +1,21 @@
 {-# LANGUAGE RecordWildCards  #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving  #-}
 
 
 module Lib where
-
+  
+import Control.Monad.Reader
 import Graphics.Rendering.Cairo
 import Data.RVar
 import Data.Random.Distribution.Uniform
 import Data.Random.Source.PureMT
 import Linear.V2
 
+import Types
 import Color
 
-import Control.Monad.State
-import Control.Monad.Reader
-import Control.Monad.Trans.RWS.Strict (RWST (..))
-import Control.Monad.Trans
 import Data.Foldable
 
 import Debug.Trace
-data World = World 
-  { worldWidth  :: Double
-  , worldHeight :: Double
-  , scaleFactor :: Double
-  }
-
-data MyState = MyState 
-newtype App a = App {unApp :: RWST World () MyState Render a}
-  deriving (Functor, Applicative, Monad, MonadIO
-           ,MonadState MyState, MonadReader World)
-
-runApp :: World -> MyState -> App a -> Render a
-runApp world state sketch = do
-  (a, _, _)<- runRWST (unApp sketch) world state 
-  pure a
-
-liftApp :: Render a -> App a
-liftApp = App . lift
-
-type Generate a  = StateT PureMT (Reader World) a
-
 
 bg :: App ()
 bg = do
@@ -49,10 +25,8 @@ bg = do
     rectangle 0 0 w h
     fill
 
-
 -- by the time I've set up this function for one concrete config,
 -- I should be able to right-click -> design gallery
-type Wobble = (Double, Double)
 wobbleApproxCircle :: (Double, Double) -> Double -> Double -> Wobble ->  App() 
 wobbleApproxCircle (cx, cy) radius degrees (f, m) = do
   (World w h _ ) <- ask
@@ -68,16 +42,12 @@ wobbleApproxCircle (cx, cy) radius degrees (f, m) = do
       else  do
         darkGunmetal 1
       -- g(t) = R + m*cos(f*t)
-      -- let wobbleX =  trace ("mag: " ++ (show w) ++ "      freq: " ++ (show f)) $ w * cos (f*degree * (pi / 180))
       let wobbleX = m * cos (f*degree * (pi / 180))
       let wobbleY = m * sin (f*degree * (pi / 180))
 
-      -- trace  ("dx: " ++ (show $ radius * cos (degree * (pi / 180))) )
       let dx = radius * cos (degree * (pi / 180))
       let dy = radius * sin (degree * (pi / 180))
 
-      -- let x = trace ("x = " ++ show (cx + dx)) $ (cx + dx + wobbleX)
-      -- let y = trace ("y = " ++ show (cy + dy)) $ (cy - dy - wobbleY)
       let x =  (cx + dx + wobbleX)
       let y =  (cy - dy - wobbleY)
       lineTo x y

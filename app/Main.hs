@@ -1,33 +1,17 @@
 
 module Main where
 
-import Lib
+import Types
+import Animation
 
 import Graphics.Rendering.Cairo
 import Data.Random
 import Data.Random.Source.StdGen
-import Data.List
 
-
-import Debug.Trace
-
-import  Data.Time.Clock.POSIX
+import Data.Time.Clock.POSIX
 import Data.Foldable
 import Control.Monad.State
 
--- this function is something I want to keep a bunch of different versions of
--- each one represents a different project within a given environment
--- and for each sketch the paramters to it represent an exploration
-sketch :: [(Double, Wobble)] -> App ()
-sketch circleData =  do
-  bg
-  trace (show circleData) $ for_ circleData $ \(r, wobble) -> wobbleApproxCircle (175,125) r 360 wobble
-
--- I want the option of animation on hand all the time
-animation :: [[(Double, Wobble)]] -> [App ()]
-animation circles = 
-  fmap sketch circles
-    
 writeSketch :: World -> MyState -> String -> App a -> IO()
 writeSketch world myState path theSketch = do
   surface <-
@@ -53,19 +37,24 @@ main = do
   let frames = 25
   let radii = [1 :: Double, 2, 3, 5, 8, 13, 21, 34, 55, 88, 143, 231]
   
-  let circleData = zip radii $ wobbles (length radii) src
-  let frameRenders = animation $ fmap (\t -> growCircles t circleData)  [0 .. frames]
+
+  let (wobbles', src') = wobbles (length radii) src
+  let circleData = zip radii wobbles'
+  let (cx, src'')  = runState (runRVar (uniform (0 :: Double) 300) StdRandom) src'
+  let (cy, src''') = runState (runRVar (uniform ((0 :: Double) 300) StdRandom) src''
+  
+  let frameRenders = animation (cx, cy) $ fmap (\t -> growCircles t circleData) [0 .. frames]
   for_ (zip [1 .. frames] frameRenders) $ \(f, r) -> do
     let fileName = "./out/" <>  (leftPad '0' 4 $ show f) <> ".png" 
     writeSketch world mystate fileName r
   pure ()
 
-wobbles :: Int -> StdGen -> [Wobble]
+wobbles :: Int -> StdGen -> ([Wobble], StdGen)
 wobbles num src =
-  zip frequencies magnitudes
+  (zip frequencies magnitudes, src'')
   where
     (frequencies, src') = runState (replicateM num (runRVar (uniform (0.1:: Double) 10) StdRandom)) src
-    magnitudes = evalState (replicateM num (runRVar (uniform (0.1 :: Double) 5) StdRandom)) src'
+    (magnitudes, src'') = runState (replicateM num (runRVar (uniform (0.1 :: Double) 5) StdRandom)) src'
 
 
 growCircles :: Int -> [(Double, Wobble)] -> [(Double, Wobble)]
