@@ -11,6 +11,7 @@ import Data.Random.Source.StdGen
 import Data.Time.Clock.POSIX
 import Data.Foldable
 import Control.Monad.State
+import System.Directory
 
 writeSketch :: World -> MyState -> String -> App a -> IO()
 writeSketch world myState path theSketch = do
@@ -34,19 +35,22 @@ main = do
   seed <- round . (*1000) <$> getPOSIXTime
   let src = mkStdGen seed
 
-  let frames = 25
   let radii = [1 :: Double, 2, 3, 5, 8, 13, 21, 34, 55, 88, 143, 231]
-  
-
   let (wobbles', src') = wobbles (length radii) src
   let circleData = zip radii wobbles'
   let (cx, src'')  = runState (runRVar (uniform (0 :: Double) 300) StdRandom) src'
-  let (cy, src''') = runState (runRVar (uniform ((0 :: Double) 300) StdRandom) src''
-  
+  let (cy, _) = runState (runRVar (uniform (0 :: Double) 300) StdRandom) src''
+
+  let frames = 25
   let frameRenders = animation (cx, cy) $ fmap (\t -> growCircles t circleData) [0 .. frames]
+  let dir = "out/" <> (show seed)
+  createDirectory dir
   for_ (zip [1 .. frames] frameRenders) $ \(f, r) -> do
-    let fileName = "./out/" <>  (leftPad '0' 4 $ show f) <> ".png" 
-    writeSketch world mystate fileName r
+    let fileName = (leftPad '0' 4 $ show f) <> ".png" 
+    let latest  = "./out/latest/" <> fileName 
+    let archive = "./" <> dir <> "/" <> fileName
+    writeSketch world mystate latest r
+    writeSketch world mystate archive r
   pure ()
 
 wobbles :: Int -> StdGen -> ([Wobble], StdGen)
