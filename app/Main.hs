@@ -42,7 +42,8 @@ main = do
   let (cy, _) = runState (runRVar (uniform (0 :: Double) 300) StdRandom) src''
 
   let frames = 25
-  let frameRenders = animation (cx, cy) $ fmap (\t -> growCircles t circleData) [0 .. frames]
+  let frameRenders = drawAnimation (cx, cy) $ animate frames circleData shrinkCircles 
+
   let dir = "out/" <> (show seed)
   createDirectory dir
   for_ (zip [1 .. frames] frameRenders) $ \(f, r) -> do
@@ -60,10 +61,16 @@ wobbles num src =
     (frequencies, src') = runState (replicateM num (runRVar (uniform (0.1:: Double) 10) StdRandom)) src
     (magnitudes, src'') = runState (replicateM num (runRVar (uniform (0.1 :: Double) 5) StdRandom)) src'
 
-
+-- What kind of type magic would it take to be able to name these "grow" and "shrink"
 growCircles :: Int -> [(Double, Wobble)] -> [(Double, Wobble)]
 growCircles by circles =
   (flip fmap) circles $ \(r, (f, m)) -> (r+(5*(fromIntegral by)), (f, m))
+
+shrinkCircles :: Int -> [(Double, Wobble)] -> [(Double, Wobble)]
+shrinkCircles by circles =
+  (flip fmap) circles $ \(r, (f, m)) -> (r-(5*(fromIntegral by)), (f, m))  
+-- want: a dev version that doesn't require input at run time
+-- want: an explore version that can be dynamically parameterized
 
 
 -- animation idea
@@ -74,6 +81,10 @@ growCircles by circles =
   -- every frame could have a queriable predicate? but then creating new
   --    
 
+-- what is the type of an experiment?
+
+-- I could write out an eff ton of different configurations of this animation
+-- then need an interactive application to browse through everything that gets produced.
 
   -- how make "oowahoowahooowah" come out from the circle?
 
@@ -83,9 +94,10 @@ growCircles by circles =
 {-
     TODO:
     - Want to use diagrams for compositing
-    - Can still make .png's directly through cairo and then lift them into a Diagram
+      - Can still make .png's directly through cairo and then lift them into a Diagram
     - figure out how to give the entire image a "papery" feel
-    - is there a way to add paper crinkles?
+      - is there a way to add paper crinkles?
+    - interactive application for making/previewing gifs. First thing: starting radiuses of circles
 -}
 
 {-
