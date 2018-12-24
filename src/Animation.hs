@@ -27,3 +27,5 @@ drawAnimation origin circles =
 animate :: Int -> a -> (Int -> a -> b) -> [b]
 animate frames data' transform =
   fmap (\x -> transform x data') $ [0 .. frames]
+
+-- produceAnimation :: [App ()]

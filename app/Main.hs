@@ -28,30 +28,52 @@ writeSketch world myState path theSketch = do
 leftPad :: Char -> Int -> String -> String
 leftPad c n src = (replicate (n - length src) c) ++ src
 
+-- how might we create an animation with an arbitrary subset of a list?
+
 main :: IO ()
 main = do
   let world = World 300 300 1
   let mystate = MyState
   seed <- round . (*1000) <$> getPOSIXTime
-  let src = mkStdGen seed
-
-  let radii = [1 :: Double, 2, 3, 5, 8, 13, 21, 34, 55, 88, 143, 231]
-  let (wobbles', src') = wobbles (length radii) src
-  let circleData = zip radii wobbles'
-  let (cx, src'')  = runState (runRVar (uniform (0 :: Double) 300) StdRandom) src'
-  let (cy, _) = runState (runRVar (uniform (0 :: Double) 300) StdRandom) src''
 
   let frames = 25
-  let frameRenders = drawAnimation (cx, cy) $ animate frames circleData shrinkCircles 
+  -- START INPUT CREATION
+  let src = mkStdGen seed
+  let radii = [1 :: Double, 2, 3, 5, 8, 13, 21, 34, 55, 88, 143, 231]
+  let (wobbles', src') = wobbles (length radii) src
+  -- let circleData = zip radii wobbles'
+  let (cx, src'')  = runState (runRVar (uniform (0 :: Double) 300) StdRandom) src'
+  let (cy, _) = runState (runRVar (uniform (0 :: Double) 300) StdRandom) src''
+  let animations = flip fmap [1 .. 12] (\n -> 
+                                    let rs = take n radii
+                                        circleData = zip rs wobbles'
+                                    in
+                                    drawAnimation (cx, cy) $ animate frames circleData shrinkCircles 
+                                    )
+
+
+  -- let radii = [1 :: Double, 2, 3, 5, 8, 13, 21, 34, 55, 88, 143, 231]
+  -- let (wobbles', src') = wobbles (length radii) src
+  -- let circleData = zip radii wobbles'
+  -- let (cx, src'')  = runState (runRVar (uniform (0 :: Double) 300) StdRandom) src'
+  -- let (cy, _) = runState (runRVar (uniform (0 :: Double) 300) StdRandom) src''
+  -- END INPUT CREATION
+
 
   let dir = "out/" <> (show seed)
   createDirectory dir
-  for_ (zip [1 .. frames] frameRenders) $ \(f, r) -> do
-    let fileName = (leftPad '0' 4 $ show f) <> ".png" 
-    let latest  = "./out/latest/" <> fileName 
-    let archive = "./" <> dir <> "/" <> fileName
-    writeSketch world mystate latest r
-    writeSketch world mystate archive r
+  for_ (zip [1 .. length animations] animations) $ \(i, frameRenders) -> do
+    let animationDir = dir ++ "/" ++ (show i)
+    let latestDir    = "out/latest/" ++ (show i)
+    createDirectory animationDir    
+    -- createDirectory latestDir    
+
+    for_ (zip [1 .. frames] frameRenders) $ \(f, r) -> do
+      let fileName = (leftPad '0' 4 $ show f) <> ".png" 
+      let latest  = "./out/latest/" <> (show i) <> "/" <> fileName 
+      let archive = "./" <> animationDir <> "/" <> fileName
+      writeSketch world mystate latest r
+      writeSketch world mystate archive r
   pure ()
 
 wobbles :: Int -> StdGen -> ([Wobble], StdGen)
@@ -90,10 +112,11 @@ shrinkCircles by circles =
 
 -- how can we write less code to explore alternatives
 
-
 {-
     TODO:
     - Want to use diagrams for compositing
+      - right now im drawing 1 circle, then 2, ..then 12. There is redundant drawing. If
+        I used diagrams then I could draw all circles once and then `atop` them together.
       - Can still make .png's directly through cairo and then lift them into a Diagram
     - figure out how to give the entire image a "papery" feel
       - is there a way to add paper crinkles?
