@@ -4,6 +4,8 @@ module Main where
 import Types
 import Animation
 
+import Debug.Trace
+
 import Graphics.Rendering.Cairo
 import Data.Random
 import Data.Random.Source.StdGen
@@ -60,21 +62,26 @@ main = do
   -- END INPUT CREATION
 
 
-  let dir = "out/" <> (show seed)
-  createDirectory dir
-  for_ (zip [1 .. length animations] animations) $ \(i, frameRenders) -> do
-    let animationDir = dir ++ "/" ++ (show i)
-    let latestDir    = "out/latest/" ++ (show i)
-    createDirectory animationDir    
-    -- createDirectory latestDir    
+  let archive = "out/" <> (show seed)
+  let latest  = "out/latest"
+  writeAnimations world mystate animations archive
+  writeAnimations world mystate animations latest
 
-    for_ (zip [1 .. frames] frameRenders) $ \(f, r) -> do
-      let fileName = (leftPad '0' 4 $ show f) <> ".png" 
-      let latest  = "./out/latest/" <> (show i) <> "/" <> fileName 
-      let archive = "./" <> animationDir <> "/" <> fileName
-      writeSketch world mystate latest r
-      writeSketch world mystate archive r
   pure ()
+
+writeAnimations :: World -> MyState -> [[App a]] -> String -> IO()
+writeAnimations world state animations dest =
+  for_ (zip [1 .. length animations] animations) $ \(i, a) -> do
+    let subFolder = traceShowId $ dest ++ "/" ++ show i ++ "/"
+    createDirectoryIfMissing True subFolder 
+    writeAnimation world state a subFolder
+
+writeAnimation :: World -> MyState -> [App a] -> String  -> IO()
+writeAnimation world state animation dest =
+  for_ (zip [1 .. length animation] animation) $ \(i, f) -> do
+    let fileName = (leftPad '0' 4 $ show i) <> ".png" 
+    let path = dest <> fileName
+    writeSketch world state path f
 
 wobbles :: Int -> StdGen -> ([Wobble], StdGen)
 wobbles num src =
