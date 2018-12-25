@@ -19,8 +19,10 @@
 </head>
 <body>
  <div id="gif-div">
+   <label for="numCircles">Circles: <span id="circleCount">1</span></label>
+   <input type="range" value="1" onchange="changeGif(event)" id="circles" name="numCircles" min="1" max="12">
    <img id="gif" src="./_out1.gif" alt="">
-   <img id="gif" src="./_out2.gif" alt="">
+   <!-- <img id="gif" src="./_out2.gif" alt="">
    <img id="gif" src="./_out3.gif" alt="">
    <img id="gif" src="./_out4.gif" alt="">
    <img id="gif" src="./_out5.gif" alt="">
@@ -30,10 +32,18 @@
    <img id="gif" src="./_out9.gif" alt="">
    <img id="gif" src="./_out10.gif" alt="">
    <img id="gif" src="./_out11.gif" alt="">
-   <img id="gif" src="./_out12.gif" alt="">
+   <img id="gif" src="./_out12.gif" alt=""> -->
  </div> 
  <!-- 
    - slider to pick how many circles there are so only one gif on screen at a time
   -->
 </body>
+<script>
+  const gif = document.getElementById('gif');
+  const circleCount = document.getElementById('circleCount');
+  function changeGif(e) {
+    gif.src = `./_out${e.target.value}.gif`;
+    circleCount.innerText = `${e.target.value}`;
+  }
+</script>
 </html>
