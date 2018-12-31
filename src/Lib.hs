@@ -54,26 +54,6 @@ wobbleApproxCircle (cx, cy) radius degrees (f, m) = do
 
     stroke
     
-      
-
-
--- noiseMask :: App()
--- noiseMask = do
---   (World w h _) <- ask
---   liftApp $ do
---     for_ [0 .. w*h] $ \n -> do
---       newPath
---       hsva 90 90 90 1
---       let x = abs (w * tan (n + 2389))
---       let y = abs (h * tan (n + 7103))
---       rectangle x y 50 50
---       fill
-      -- rectangle 50 50 50 50
-      -- fill
-      -- where
-      --   x = (tan (n + 2389) * w)
-      --   y = (tan (n + 7103) * h) 
-
 square :: Double -> App ()
 square x  = do
   (World w h _) <- ask

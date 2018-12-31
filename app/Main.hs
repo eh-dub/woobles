@@ -15,17 +15,22 @@ import Data.Foldable
 import Control.Monad.State
 import System.Directory
 
-writeSketch :: World -> MyState -> String -> App a -> IO()
-writeSketch world myState path theSketch = do
-  surface <-
-    createImageSurface
-      FormatARGB32
-      (round $ worldWidth world)
-      (round $ worldHeight world)
-  _ <- renderWith surface $ do
-    scale (scaleFactor world) (scaleFactor world)
-    runApp world myState theSketch
-  surfaceWriteToPNG surface path
+import Linear.V2
+import Diagrams.Backend.Cairo
+import Diagrams.Size
+import DLib
+
+-- writeSketch :: World -> MyState -> String -> App a -> IO()
+-- writeSketch world myState path theSketch = do
+--   surface <-
+--     createImageSurface
+--       FormatARGB32
+--       (round $ worldWidth world)
+--       (round $ worldHeight world)
+--   _ <- renderWith surface $ do
+--     scale (scaleFactor world) (scaleFactor world)
+--     runApp world myState theSketch
+--   surfaceWriteToPNG surface path
 
 leftPad :: Char -> Int -> String -> String
 leftPad c n src = (replicate (n - length src) c) ++ src
@@ -64,24 +69,27 @@ main = do
 
   let archive = "out/" <> (show seed)
   let latest  = "out/latest"
-  writeAnimations world mystate animations archive
-  writeAnimations world mystate animations latest
+  -- writeAnimations world mystate animations archive
+  -- writeAnimations world mystate animations latest
+  let sketch = myCircle
+  let diagram = runDApp world sketch
+  renderCairo "out/test.png" (dims $ V2 300 300) diagram
 
   pure ()
 
-writeAnimations :: World -> MyState -> [[App a]] -> String -> IO()
-writeAnimations world state animations dest =
-  for_ (zip [1 .. length animations] animations) $ \(i, a) -> do
-    let subFolder = traceShowId $ dest ++ "/" ++ show i ++ "/"
-    createDirectoryIfMissing True subFolder 
-    writeAnimation world state a subFolder
+-- writeAnimations :: World -> MyState -> [[App a]] -> String -> IO()
+-- writeAnimations world state animations dest =
+--   for_ (zip [1 .. length animations] animations) $ \(i, a) -> do
+--     let subFolder = traceShowId $ dest ++ "/" ++ show i ++ "/"
+--     createDirectoryIfMissing True subFolder 
+--     writeAnimation world state a subFolder
 
-writeAnimation :: World -> MyState -> [App a] -> String  -> IO()
-writeAnimation world state animation dest =
-  for_ (zip [1 .. length animation] animation) $ \(i, f) -> do
-    let fileName = (leftPad '0' 4 $ show i) <> ".png" 
-    let path = dest <> fileName
-    writeSketch world state path f
+-- writeAnimation :: World -> MyState -> [App a] -> String  -> IO()
+-- writeAnimation world state animation dest =
+--   for_ (zip [1 .. length animation] animation) $ \(i, f) -> do
+--     let fileName = (leftPad '0' 4 $ show i) <> ".png" 
+--     let path = dest <> fileName
+--     writeSketch world state path f
 
 wobbles :: Int -> StdGen -> ([Wobble], StdGen)
 wobbles num src =
