@@ -30,6 +30,11 @@ addLayer layer = do
   diagram <- get
   put $ layer `atop` diagram
 
+addToRow :: Diagram B -> DApp ()
+addToRow x = do
+  diagram <- get
+  put $ (diagram ||| x)
+
 wobblyCircle :: (Double, Double) -> Double -> Wobble -> Diagram B
 wobblyCircle (cx, cy) r (f, m) =
   let vertices = (flip fmap) [0, 0.5 .. 360] $ p2 . \d ->
@@ -47,9 +52,12 @@ wobblyCircle (cx, cy) r (f, m) =
     fromVertices vertices # strokeLine # showOrigin # lc darkGunmetal
   -- put example
 
-mySketch :: [Wobble] -> DApp ()
-mySketch wobbles = do
+mySketch :: [(Double, Wobble)] -> DApp ()
+mySketch circles = do
   -- for_ [1:: Double, 2, 3, 5, 8, 13, 21] (addLayer . myCircle)
   addLayer $ square 40 # fc eggshell # showOrigin
-  for_ wobbles $ \w -> addLayer $ translateX 13 $ wobblyCircle (0, 0) 10 w
+
+  
+  let wooblies = hsep 1 $ flip fmap circles $ \(r,w) -> wobblyCircle (0, 0) r w
+  addLayer wooblies
   -- addLayer $ translateX 13 $ wobblyCircle (0, 0) 10 (0.2, 0.5)

@@ -29,3 +29,18 @@ import Data.Foldable
 --   fmap (\x -> transform x data') $ [0 .. frames]
 
 -- produceAnimation :: [App ()]
+
+
+-- writeAnimations :: World -> MyState -> [[App a]] -> String -> IO()
+-- writeAnimations world state animations dest =
+--   for_ (zip [1 .. length animations] animations) $ \(i, a) -> do
+--     let subFolder = traceShowId $ dest ++ "/" ++ show i ++ "/"
+--     createDirectoryIfMissing True subFolder 
+--     writeAnimation world state a subFolder
+
+-- writeAnimation :: World -> MyState -> [App a] -> String  -> IO()
+-- writeAnimation world state animation dest =
+--   for_ (zip [1 .. length animation] animation) $ \(i, f) -> do
+--     let fileName = (leftPad '0' 4 $ show i) <> ".png" 
+--     let path = dest <> fileName
+--     writeSketch world state path f
