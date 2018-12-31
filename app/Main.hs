@@ -71,8 +71,8 @@ main = do
   let latest  = "out/latest"
   -- writeAnimations world mystate animations archive
   -- writeAnimations world mystate animations latest
-  let sketch = myCircle
-  let diagram = runDApp world sketch
+  -- let sketch = myCircle
+  let diagram = runDApp world mySketch
   renderCairo "out/test.png" (dims $ V2 300 300) diagram
 
   pure ()
