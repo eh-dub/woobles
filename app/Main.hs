@@ -35,8 +35,11 @@ import DLib
 leftPad :: Char -> Int -> String -> String
 leftPad c n src = (replicate (n - length src) c) ++ src
 
--- how might we create an animation with an arbitrary subset of a list?
 
+-- @TODO 
+--  - remove all non-diagrams drawing code from this branch
+--  - animate a circle growing and the wobbles being consistent relative to the size
+--  - interactive exploration
 main :: IO ()
 main = do
   let world = World 300 300 1
@@ -72,7 +75,7 @@ main = do
   -- writeAnimations world mystate animations archive
   -- writeAnimations world mystate animations latest
   -- let sketch = myCircle
-  let diagram = runDApp world mySketch
+  let diagram = runDApp world $ mySketch wobbles'
   renderCairo "out/test.png" (dims $ V2 300 300) diagram
 
   pure ()
@@ -96,7 +99,7 @@ wobbles num src =
   (zip frequencies magnitudes, src'')
   where
     (frequencies, src') = runState (replicateM num (runRVar (uniform (0.1:: Double) 10) StdRandom)) src
-    (magnitudes, src'') = runState (replicateM num (runRVar (uniform (0.1 :: Double) 5) StdRandom)) src'
+    (magnitudes, src'') = runState (replicateM num (runRVar (uniform (0.1 :: Double) 0.5) StdRandom)) src'
 
 -- What kind of type magic would it take to be able to name these "grow" and "shrink"
 growCircles :: Int -> [(Double, Wobble)] -> [(Double, Wobble)]

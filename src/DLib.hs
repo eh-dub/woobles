@@ -47,8 +47,9 @@ wobblyCircle (cx, cy) r (f, m) =
     fromVertices vertices # strokeLine # showOrigin # lc darkGunmetal
   -- put example
 
-mySketch :: DApp ()
-mySketch = do
+mySketch :: [Wobble] -> DApp ()
+mySketch wobbles = do
   -- for_ [1:: Double, 2, 3, 5, 8, 13, 21] (addLayer . myCircle)
   addLayer $ square 40 # fc eggshell # showOrigin
-  addLayer $ translateX 13 $ wobblyCircle (0, 0) 10 (0.2, 0.5)
+  for_ wobbles $ \w -> addLayer $ translateX 13 $ wobblyCircle (0, 0) 10 w
+  -- addLayer $ translateX 13 $ wobblyCircle (0, 0) 10 (0.2, 0.5)
