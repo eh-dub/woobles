@@ -18,23 +18,10 @@ import System.Directory
 import Linear.V2
 import Diagrams.Backend.Cairo
 import Diagrams.Size
-import DLib
-
--- writeSketch :: World -> MyState -> String -> App a -> IO()
--- writeSketch world myState path theSketch = do
---   surface <-
---     createImageSurface
---       FormatARGB32
---       (round $ worldWidth world)
---       (round $ worldHeight world)
---   _ <- renderWith surface $ do
---     scale (scaleFactor world) (scaleFactor world)
---     runApp world myState theSketch
---   surfaceWriteToPNG surface path
+import Lib
 
 leftPad :: Char -> Int -> String -> String
 leftPad c n src = (replicate (n - length src) c) ++ src
-
 
 -- @TODO 
 --  - remove all non-diagrams drawing code from this branch
@@ -54,19 +41,6 @@ main = do
   -- let circleData = zip radii wobbles'
   let (cx, src'')  = runState (runRVar (uniform (0 :: Double) 300) StdRandom) src'
   let (cy, _) = runState (runRVar (uniform (0 :: Double) 300) StdRandom) src''
-  let animations = flip fmap [1 .. 12] (\n -> 
-                                    let rs = take n radii
-                                        circleData = zip rs wobbles'
-                                    in
-                                    drawAnimation (cx, cy) $ animate frames circleData shrinkCircles 
-                                    )
-
-
-  -- let radii = [1 :: Double, 2, 3, 5, 8, 13, 21, 34, 55, 88, 143, 231]
-  -- let (wobbles', src') = wobbles (length radii) src
-  -- let circleData = zip radii wobbles'
-  -- let (cx, src'')  = runState (runRVar (uniform (0 :: Double) 300) StdRandom) src'
-  -- let (cy, _) = runState (runRVar (uniform (0 :: Double) 300) StdRandom) src''
   -- END INPUT CREATION
 
 
