@@ -2,8 +2,8 @@
 module Main where
 
 import Types
-import Animation
 import Lib
+import Colors
 
 import Debug.Trace
 
@@ -20,6 +20,7 @@ import System.Directory
 import Linear.V2
 import Diagrams.Backend.Cairo
 import Diagrams.Size
+import Diagrams.Prelude
 
 leftPad :: Char -> Int -> String -> String
 leftPad c n src = (replicate (n - length src) c) ++ src
@@ -30,47 +31,52 @@ leftPad c n src = (replicate (n - length src) c) ++ src
 --  - interactive exploration
 main :: IO ()
 main = do
-  let world = World 300 300 1
-  let mystate = MyState
+  --let world = World 300 300 1
   seed <- round . (*1000) <$> getPOSIXTime
-
-  let frames = 25
-  -- START INPUT CREATION
   let rsrc = mkStdGen seed
-  let radii = [1 :: Double, 2, 3, 5, 8, 13, 21, 34, 55, 88, 143, 231]
-  -- let (wobbles', src') = wobbles 1 src
-  -- let (wobbles', src') = wobbles (length radii) src
-  -- let circleData = zip radii wobbles'
-  -- let (cx, src'')  = runState (runRVar (uniform (0 :: Double) 300) StdRandom) src'
-  -- let (cy, _) = runState (runRVar (uniform (0 :: Double) 300) StdRandom) src''
-  -- END INPUT CREATION
 
+  --let frames = 25
+  --let radii = [1 :: Double, 2, 3, 5, 8, 13, 21, 34, 55, 88, 143, 231]
+  --let archive = "out/" <> (show seed)
+  --let latest  = "out/latest"
 
-  let archive = "out/" <> (show seed)
-  let latest  = "out/latest"
-  -- writeAnimations world mystate animations archive
-  -- writeAnimations world mystate animations latest
+  -- let magDist = (uniform (0.1 :: Double) 10)
+  -- let freqDist = (uniform (0.1 :: Double) 0.5)
+  -- let wobbles = evalState (replicateM 3 $ wobble' magDist freqDist) rsrc
+  --let circleData = zip [1 :: Double, 2 .. 10] wobbles
 
-  let magDist = (uniform (0.1 :: Double) 10)
-  let freqDist = (uniform (0.1 :: Double) 0.5)
-  let wobbles = evalState (replicateM 10 $ wobble' magDist freqDist) rsrc
-  let circleData = zip [1 :: Double, 2 .. 10] wobbles
-  let diagram = runDApp world $ mySketch circleData
+  --let colors = fmap runRVartake 6 $ repeat $ randomElement [red, blue, aqua, brown, pink]
+  let colors = [myTeal, myFuchsia, myCobalt, myBeige]
+  let radii  = [1 :: Double, 1.5 .. 23]
+  let selectedColors = evalState (replicateM (length radii) $ runRVar (randomElement colors) StdRandom) rsrc
+
+  let circles = flip fmap (zip selectedColors radii) $ \(c,r) -> woobly r (20, r/75) c
+  let diagram = foldr (\d acc -> d `atop` acc) mempty circles
+
   renderCairo "out/test.png" (dims $ V2 300 300) diagram
 
+  --let diagram = runDApp world $ mySketch circleData
+  --putStrLn "radius: "
+  --radiusS <- getLine
+  --putStrLn "frequency: "
+  --frequencyS <- getLine
+  --putStrLn "magnitude: "
+  --magnitudeS <- getLine
+  --r: 5 f: 20 m: 0.05
+
+  --let r = read radiusS
+  --let f = read frequencyS
+  --let m = read magnitudeS
+  -- magnitude should be no more than 10% of the radius
+  -- unclear if frequency should be a function of radius
+  --let diagram = woobly r (f, m)
   pure ()
+
+--color' :: RVar (Colour Double) -> State StdGen (Colour Double)
+--color' opts = runRVar (randomElement opts) StdRandom
 
 wobble' :: RVar Double -> RVar Double -> State StdGen Wobble
 wobble' d1 d2 = liftA2 (,) (runRVar d1 StdRandom) (runRVar d2 StdRandom)
-
--- What kind of type magic would it take to be able to name these "grow" and "shrink"
-growCircles :: Int -> [(Double, Wobble)] -> [(Double, Wobble)]
-growCircles by circles =
-  (flip fmap) circles $ \(r, (f, m)) -> (r+(5*(fromIntegral by)), (f, m))
-
-shrinkCircles :: Int -> [(Double, Wobble)] -> [(Double, Wobble)]
-shrinkCircles by circles =
-  (flip fmap) circles $ \(r, (f, m)) -> (r-(5*(fromIntegral by)), (f, m))
 
 -- animation idea
 -- have wobbly circles grow in size  DONE
@@ -79,11 +85,6 @@ shrinkCircles by circles =
   -- how determine when a new circle needs to be made?
   -- every frame could have a queriable predicate? but then creating new
   --
-
--- what is the type of an experiment?
-
--- I could write out an eff ton of different configurations of this animation
--- then need an interactive application to browse through everything that gets produced.
 
   -- how make "oowahoowahooowah" come out from the circle?
 
