@@ -30,4 +30,6 @@ myCobalt = sRGB24 20 97 152
 myBeige :: Colour Double
 myBeige = sRGB24 213 148 118
 
+myCharcoal :: Colour Double
+myCharcoal = sRGB24 33 33 33
 

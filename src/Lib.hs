@@ -37,11 +37,12 @@ wobblyCircle :: (Double, Double) -> Double -> Wobble -> Colour Double -> Diagram
 wobblyCircle (cx, cy) r (f, m) color =
   let vertices = (flip fmap) [0, 0.5 .. 360] $ p2 . \d ->
                     let
-                      dx = r * cos (d * (pi / 180))
-                      dy = r * sin (d * (pi / 180))
-                      w = m*cos(f*d * (pi / 180) + d)
-                      wobbleX = w * cos (d * (pi / 180))
-                      wobbleY = w * sin (d * (pi / 180))
+                      rads = d * (pi / 180)
+                      dx = r * cos (rads)
+                      dy = r * sin (rads)
+                      w = m*cos(f*rads)
+                      wobbleX = w * cos (rads)
+                      wobbleY = w * sin (rads)
                       x = cx + dx + wobbleX
                       y = cy + dy + wobbleY
                     in

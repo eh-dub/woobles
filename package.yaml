@@ -38,6 +38,7 @@ dependencies:
 - diagrams-svg
 - diagrams-cairo
 - diagrams-core
+- palette
 
 library:
   source-dirs: src
