@@ -28,13 +28,15 @@ main = do
   let radii  = [0.1 :: Double, 0.45 .. 50]
   let numCircs = length radii
   let (freqs, rsrc')  = runState (replicateM numCircs $ runRVar (uniform (4 :: Double) 8) StdRandom) rsrc
+  let phases = evalState (replicateM numCircs $ runRVar (uniform ((pi :: Double)/4.0) pi) StdRandom) rsrc'
 
   colors <- myColors numCircs
   let circles = getZipList $
-              (\c r f -> wooble r (Wobble f (r/75) 0) c)
+              (\c r f p -> wooble r (Wobble f (r/75) p) c)
                 <$> coerce colors
                 <*> coerce radii
                 <*> coerce freqs
+                <*> coerce phases
   let diagram = foldr (\d acc -> d `atop` acc) mempty circles
 
   renderCairo "out/test.png" (dims $ V2 600 600) (diagram # bg black)
