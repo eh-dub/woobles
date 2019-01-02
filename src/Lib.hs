@@ -1,37 +1,21 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
-{-# LANGUAGE FlexibleContexts          #-}
-{-# LANGUAGE TypeFamilies              #-}
 module Lib where
 
+import Control.Monad
+
 import Diagrams.Prelude
-import Diagrams.Attributes
-import Diagrams.TwoD
-import Diagrams.TwoD.Arrow
-import Diagrams.Trail
 import Diagrams.Backend.Cairo
 
-import qualified Data.Colour as C
+import Data.Colour.Palette.Types
+import Data.Colour.Palette.RandomColor
+import Data.Random
+import Data.Random.Distribution.Categorical
 
-import MyMonadState
-import Data.Foldable
-
-import Types
-import Colors
-
-
-myCircle :: Double -> Diagram B
-myCircle r =
-  circle r
-
-addLayer :: Diagram B -> DApp ()
-addLayer layer = do
-  diagram <- get
-  put $ layer `atop` diagram
-
-addToRow :: Diagram B -> DApp ()
-addToRow x = do
-  diagram <- get
-  put $ (diagram ||| x)
+data Wobble = Wobble
+  { wFrequency :: Double
+  , wMagnitude :: Double
+  , wPhase     :: Double
+  } deriving (Eq, Ord, Show)
 
 wobblyCircle :: (Double, Double) -> Double -> Wobble -> Colour Double -> Diagram B
 wobblyCircle (cx, cy) r (Wobble f m p) color =
@@ -53,3 +37,20 @@ wobblyCircle (cx, cy) r (Wobble f m p) color =
 wooble :: Double -> Wobble -> Colour Double -> Diagram B
 wooble r w c = wobblyCircle (0, 0) r w c
 
+myColors :: Int -> IO [Kolor]
+myColors numWoobles = do
+  brightColors <- replicateM numWoobles $ randomColor HueRandom LumBright
+  lightColors  <- replicateM numWoobles $ randomColor HuePurple LumLight
+  darkColors   <- replicateM numWoobles $ randomColor HuePurple LumDark
+  let brightProb = 0.1 :: Double
+  flip runRVar StdRandom
+   . traverse (\x -> do
+        let p = (1 - brightProb)*x
+        group <- weightedCategorical
+                  [ (p, darkColors)
+                  , (1 - brightProb - p, lightColors)
+                  , (brightProb, brightColors)
+                  ]
+        randomElement group)
+    . fmap (/ fromIntegral numWoobles)
+    $ [0 .. fromIntegral numWoobles]
