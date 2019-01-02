@@ -48,7 +48,7 @@ wobblyCircle (cx, cy) r (Wobble f m p) color =
                     in
                       (x, y)
   in
-    fromVertices vertices # glueLine # strokeLoop # lw veryThin # lc darkGunmetal # fc color
+    fromVertices vertices # glueLine # strokeLoop # lw none # fc color
 
 wooble :: Double -> Wobble -> Colour Double -> Diagram B
 wooble r w c = wobblyCircle (0, 0) r w c

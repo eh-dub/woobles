@@ -19,6 +19,7 @@ import Linear.V2
 import Diagrams.Backend.Cairo
 import Diagrams.Size
 import Diagrams.Prelude
+import qualified Diagrams.TwoD.Path.Boolean as B
 
 main :: IO ()
 main = do
@@ -37,9 +38,11 @@ main = do
                 <*> coerce radii
                 <*> coerce freqs
                 <*> coerce phases
-  let diagram = foldr (\d acc -> d `atop` acc) mempty circles
+  let diagram = foldr (\d acc -> center d `atop` acc) mempty circles
+  -- let clip = unitSquare  # scale (50) # translate ((-25) ^& (-25))
+  let envelope = rectEnvelope (p2 (-35, -25)) (r2 (35, 35))
 
-  renderCairo "out/test.png" (dims $ V2 600 600) (diagram # bg black)
+  renderCairo "out/test.png" (dims $ V2 600 600) (diagram # bg black # envelope)
 
   pure ()
 
