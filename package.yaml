@@ -39,6 +39,7 @@ dependencies:
 - diagrams-cairo
 - diagrams-core
 - palette
+- hsnoise
 
 
 executables:
