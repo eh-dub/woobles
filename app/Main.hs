@@ -11,6 +11,8 @@ import Data.Colour.Palette.Types
 import Data.Colour.Palette.RandomColor
 import Data.Coerce
 
+import qualified Numeric.Noise.Perlin as P
+
 import Data.Time.Clock.POSIX
 import Control.Monad.State
 import Control.Applicative
@@ -26,7 +28,7 @@ main = do
   seed <- round . (*1000) <$> getPOSIXTime
   let rsrc = mkStdGen seed
 
-  let radii  = [0.1 :: Double, 0.45 .. 50]
+  let radii  = [0.1 :: Double, 0.45 .. 70]
   let numCircs = length radii
   let (freqs, rsrc')  = runState (replicateM numCircs $ runRVar (uniform (4 :: Double) 8) StdRandom) rsrc
   let phases = evalState (replicateM numCircs $ runRVar (uniform ((pi :: Double)/4.0) pi) StdRandom) rsrc'
@@ -40,17 +42,17 @@ main = do
                 <*> coerce phases
   let diagram = foldr (\d acc -> center d `atop` acc) mempty circles
   -- let clip = unitSquare  # scale (50) # translate ((-25) ^& (-25))
-  let envelope = rectEnvelope (p2 (-35, -25)) (r2 (35, 35))
+  let envelope = rectEnvelope (p2 (-48, -40)) (r2 (40, 40))
 
-  renderCairo "out/test.png" (dims $ V2 600 600) (diagram # bg black # envelope)
+  renderCairo "out/test.png" (dims $ V2 1600 900) (diagram # bg black # envelope)
 
   pure ()
 
 myColors :: Int -> IO [Kolor]
 myColors numCircs = do
   brightColors <- replicateM numCircs $ randomColor HueRandom LumBright
-  lightColors  <- replicateM numCircs $ randomColor HueRandom LumLight
-  darkColors   <- replicateM numCircs $ randomColor HueRandom LumDark
+  lightColors  <- replicateM numCircs $ randomColor HuePurple LumLight
+  darkColors   <- replicateM numCircs $ randomColor HuePurple LumDark
   let brightProb = 0.1 :: Double
   flip runRVar StdRandom
    . traverse (\x -> do
