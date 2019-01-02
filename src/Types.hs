@@ -36,4 +36,12 @@ runDApp world sketch =
     unMyDiagram s
 
 
-type Wobble = (Double, Double)
+data Wobble = Wobble
+  { wFrequency :: Double
+  , wMagnitude :: Double
+  , wPhase     :: Double
+  } deriving (Eq, Ord, Show)
+
+
+
+
