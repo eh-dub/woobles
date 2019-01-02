@@ -8,7 +8,9 @@ import Colors
 import Debug.Trace
 
 import Data.Random
+import Data.Random.Distribution.Categorical
 import Data.Random.Source.StdGen
+import Data.Colour.Palette.Types
 import Data.Colour.Palette.RandomColor
 
 import Data.Time.Clock.POSIX
@@ -25,26 +27,36 @@ import Diagrams.Prelude
 leftPad :: Char -> Int -> String -> String
 leftPad c n src = (replicate (n - length src) c) ++ src
 
--- @TODO
---  - remove all non-diagrams drawing code from this branch
---  - animate a circle growing
---  - interactive exploration
 main :: IO ()
 main = do
   seed <- round . (*1000) <$> getPOSIXTime
   let rsrc = mkStdGen seed
 
-  let radii  = [1 :: Double, 1.25 .. 23]
+  let radii  = [0.1 :: Double, 0.3 .. 50]
   let numCircs = length radii
   let (freqs, rsrc')  = runState (replicateM numCircs $ runRVar (uniform (15 :: Double) 25) StdRandom) rsrc
-  colors <- fmap (take 10) $ do
-    randomCIELabPalette
-  let selectedColors = evalState (replicateM (length radii) $ runRVar (randomElement colors) StdRandom) rsrc'
 
-  let circles = flip fmap (zip3 selectedColors radii freqs) $ \(c,r,f) -> woobly r (f, r/75) c
+  brightColors <- replicateM numCircs $ randomColor HueRandom LumBright
+  lightColors  <- replicateM numCircs $ randomColor HueRandom LumLight
+  darkColors   <- replicateM numCircs $ randomColor HueRandom LumDark
+  myColors <- do
+    let brightProb = 0.1 :: Double
+    flip runRVar StdRandom
+     . traverse (\x -> do
+          let p = (1 - brightProb)*x
+          group <- weightedCategorical
+                    [ (p, darkColors)
+                    , (1 - brightProb - p, lightColors)
+                    , (brightProb, brightColors)
+                    ]
+          randomElement group)
+      . fmap (/ fromIntegral numCircs)
+      $ [0 .. fromIntegral numCircs]
+
+  let circles = flip fmap (zip3 myColors radii freqs) $ \(c,r,f) -> woobly r (f, r/75) c
   let diagram = foldr (\d acc -> d `atop` acc) mempty circles
 
-  renderCairo "out/test.png" (dims $ V2 300 300) (diagram # bg black)
+  renderCairo "out/test.png" (dims $ V2 600 600) (diagram # bg black)
 
   pure ()
 
