@@ -13,6 +13,15 @@ magnitude = center (hsep 1 $ fmap (\m -> wooble (0,0) 1 (Wobble 5 m 0) medium wh
 frequency :: Diagram B
 frequency = center (hsep 1 $ fmap (\f -> wooble (0,0) 1 (Wobble f 0.1 0) medium white) [1, 2, 5, 10]) `atop` background 15
 
+phase :: Diagram B
+phase =
+  bg white
+  . center
+  . hsep 1
+  . fmap (\p -> wooble (0,0) 1 (Wobble 5 0.1 p) medium white)
+  $ [0, (pi::Double)/2 .. 1.5*pi]
+
+
 frequencyAndMagnitude :: Diagram B
 frequencyAndMagnitude =
   let
