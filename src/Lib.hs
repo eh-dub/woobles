@@ -17,25 +17,25 @@ data Wobble = Wobble
   , wPhase     :: Double
   } deriving (Eq, Ord, Show)
 
-wobblyCircle :: (Double, Double) -> Double -> Wobble -> Colour Double -> Diagram B
-wobblyCircle (cx, cy) r (Wobble f m p) color =
+wooble :: (Double, Double) -> Double -> Wobble -> Measure Double -> Colour Double -> Diagram B
+wooble (cx, cy) r (Wobble f m p) lineWeight color  =
   let vertices = (flip fmap) [0, 0.5 .. 360] $ p2 . \d ->
                     let
                       rads = d * (pi / 180)
-                      dx = r * cos (rads)
-                      dy = r * sin (rads)
-                      w = m*cos(f*rads + p)
-                      wobbleX = w * cos (rads)
-                      wobbleY = w * sin (rads)
-                      x = cx + dx + wobbleX
-                      y = cy + dy + wobbleY
+                      rx = r * cos (rads)
+                      ry = r * sin (rads)
+                      wobble = m*cos(f*rads + p)
+                      wobbleX = wobble * cos (rads)
+                      wobbleY = wobble * sin (rads)
+                      x = cx + rx + wobbleX
+                      y = cy + ry + wobbleY
                     in
                       (x, y)
   in
-    fromVertices vertices # glueLine # strokeLoop # lw none # fc color
+    fromVertices vertices # glueLine # strokeLoop # lw lineWeight # fc color
 
-wooble :: Double -> Wobble -> Colour Double -> Diagram B
-wooble r w c = wobblyCircle (0, 0) r w c
+wooble' :: Double -> Wobble -> Colour Double -> Diagram B
+wooble' r w c = wooble (0, 0) r w none c
 
 myColors :: Int -> IO [Kolor]
 myColors numWoobles = do
