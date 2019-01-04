@@ -8,18 +8,46 @@ import Diagrams.Prelude
 import Diagrams.Backend.Cairo
 
 magnitude :: Diagram B
-magnitude = center (hsep 1 $ fmap (\m -> wooble (0,0) 1 (Wobble 5 m 0) medium white) [0.01, 0.05, 0.1, 0.5]) `atop` background 15
+magnitude = woobleVariation wobbles
+            where
+              phases        = 0
+              frequencies   = 5
+              magnitudes    = [0.01, 0.05, 0.1, 0.5]
+              wobbles       = Wobble
+                                <$> pure frequencies
+                                <*> magnitudes
+                                <*> pure phases
 
 frequency :: Diagram B
-frequency = center (hsep 1 $ fmap (\f -> wooble (0,0) 1 (Wobble f 0.1 0) medium white) [1, 2, 5, 10]) `atop` background 15
+frequency = woobleVariation wobbles
+            where
+              phases        = 0
+              frequencies   = [1,2,5,10]
+              magnitudes    = 0.1
+              wobbles       = Wobble
+                                <$> frequencies
+                                <*> pure magnitudes
+                                <*> pure phases
+
 
 phase :: Diagram B
-phase =
+phase = woobleVariation wobbles
+        where
+          phases        = [0, (pi::Double)/2 .. 1.5*pi]
+          frequencies   = 5
+          magnitudes    = 0.1
+          wobbles       = Wobble
+                            <$> pure frequencies
+                            <*> pure magnitudes
+                            <*> phases
+
+woobleVariation ::[Wobble] ->  Diagram B
+woobleVariation ws =
   bg white
   . center
   . hsep 1
-  . fmap (\p -> wooble (0,0) 1 (Wobble 5 0.1 p) medium white)
-  $ [0, (pi::Double)/2 .. 1.5*pi]
+  . fmap (\(Wobble f m p) -> wooble (0,0) 1 (Wobble f m p) medium white)
+  $ ws
 
 
 frequencyAndMagnitude :: Diagram B
@@ -35,9 +63,7 @@ frequencyAndMagnitude =
     . fmap (\(f,m) -> wooble (0,0) 1 (Wobble f m 0) medium white)
     $ fms
 
-  {-
-I it would be handy if I could use the flexbox model to layout diagrams
-      -}
+-- frequency And magnitude And phase
 fNmNp :: Diagram B
 fNmNp =
   let
@@ -46,7 +72,8 @@ fNmNp =
     fs = [1, 2, 5, 10]
     fmps = (\x y z -> (x,y,z)) <$> ps <*> fs <*> ms
   in
-    hsep 5
+    bg white
+    . hsep 5
     . fmap (vsep 2)
     . chunksOf (length ms)
     . fmap (hsep 2)

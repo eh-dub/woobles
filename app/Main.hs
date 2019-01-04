@@ -19,13 +19,12 @@ import Diagrams.Prelude
 main :: IO ()
 main =
   --art
-  -- renderCairo "out/figures/magnitude.png" (dims $ V2 300 300) magnitude
-  -- renderCairo "out/figures/frequency.png" (dims $ V2 300 300) frequency
-  renderCairo "out/figures/phase.png" (dims $ V2 400 100) phase
+  do
+    -- renderCairo "out/figures/magnitude.png" (dims $ V2 400 100) magnitude
+    -- renderCairo "out/figures/frequency.png" (dims $ V2 400 100) frequency
+    -- renderCairo "out/figures/phase.png" (dims $ V2 400 100) phase
 
-  -- renderCairo "out/figures/fmp.png" (dims $ V2 1200 500) fNmNp
-  --renderCairo "out/test.png" (dims $ V2 1600 900) (diagram # bg black # curatedRegion)
-  --pure ()
+    -- renderCairo "out/figures/fmp.png" (dims $ V2 1200 500) fNmNp
 
 art :: IO()
 art = do
