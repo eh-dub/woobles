@@ -29,7 +29,6 @@ frequency = woobleVariation wobbles
                                 <*> pure magnitudes
                                 <*> pure phases
 
-
 phase :: Diagram B
 phase = woobleVariation wobbles
         where
@@ -48,7 +47,6 @@ woobleVariation ws =
   . hsep 1
   . fmap (\(Wobble f m p) -> wooble (0,0) 1 (Wobble f m p) medium white)
   $ ws
-
 
 frequencyAndMagnitude :: Diagram B
 frequencyAndMagnitude =
@@ -81,26 +79,21 @@ fNmNp =
     . fmap (\(p,f,m) -> wooble (0,0) 1 (Wobble f m p) medium white)
     $ fmps
 
-figure3a :: Diagram B
-figure3a = comparison unitCircle (wooble (0,0) 1 (Wobble 1 1 0) medium white) 6
-
 figure3b :: Diagram B
-figure3b = comparison unitCircle (wooble (0,0) 1 (Wobble 5 0.05 0) medium white) 6
+figure3b = bg white
+           . hsep 1
+           $ [unitCircle, (wooble (0,0) 1 (Wobble 5 0.05 0) medium white)]
 
-figure4 :: Diagram B
-figure4 = (center $ hsep 1 [wooble (0,0) 1 (Wobble 5 0.05 0) medium white
-                 ,wooble (0,0) 1 (Wobble 9 0.1  0) medium white
-                 ,wooble (0,0) 1 (Wobble 3 0.15 0) medium white
-                 ])
-          `atop`
-          background 10
+woobles' :: (Double -> Wobble) -> Diagram B
+woobles' w  =
+  foldr (\d acc -> center d `atop` acc) mempty
+  . fmap (\r -> wooble (0,0) r (w r) medium white)
+  $ [0.1 :: Double, 0.45 .. 10]
 
-background :: Double -> Diagram B
-background bgSize =
-  square bgSize # lw none # fc white
-
-comparison :: Diagram B -> Diagram B -> Double -> Diagram B
-comparison a b bgSize =
-  (center $ hsep 1 [a, b]) `atop` background bgSize
-
+wooblesVariation :: [Double -> Wobble] ->  Diagram B
+wooblesVariation ws =
+  bg white
+  . hsep 1
+  . fmap woobles'
+  $ ws
 
