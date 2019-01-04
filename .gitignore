@@ -1,5 +1,5 @@
 .stack-work/
-filling-boxes.cabal
+*.cabal
 out/
 *~
 tags
