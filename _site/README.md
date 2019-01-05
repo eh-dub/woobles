@@ -1,3 +1,4 @@
+{% include mathjax.html %}
 # Making Woobles
 
 ![woobles](https://raw.githubusercontent.com/asweingarten/woobles/master//readme/testMonoG.png)
@@ -14,9 +15,9 @@ Keywords:
 
 ![inspiration](https://raw.githubusercontent.com/asweingarten/woobles/master//readme/inspo-sm.jpg)
 
-**Image 2: "Wobbly Ringz" by **[jawknee400](https://np.reddit.com/user/jawknee400) ([source](https://np.reddit.com/r/generative/comments/a0pfe1/wobbly_ringz/))
+**"Wobbly Ringz" by** [jawknee400](https://np.reddit.com/user/jawknee400) ([source](https://np.reddit.com/r/generative/comments/a0pfe1/wobbly_ringz/))
 
-I saw this image on [/r/generative](https://np.reddit.com/r/generative/) and was immediately taken by it. I resolved to recreate it using a software library that I've wanted to learn called [diagrams](https://archives.haskell.org/projects.haskell.org/diagrams/). 
+I saw this image on [/r/generative](https://np.reddit.com/r/generative/) and was immediately taken by it. I resolved to recreate it using a software library that I've wanted to learn called [diagrams](https://archives.haskell.org/projects.haskell.org/diagrams/).
 
 > **diagrams** is a *powerful*, *flexible*, *declarative* domain-specific language for creating vector graphics, using the [Haskell programming language](http://haskell.org/).
 
@@ -24,7 +25,7 @@ I saw this image on [/r/generative](https://np.reddit.com/r/generative/) and was
 
 A useful definition of a circle is in the [polar coordinate system](https://en.wikipedia.org/wiki/Polar_coordinate_system) where the points of the circle are specified as a function of the angle:  $f(t) = r$. Where $t$ is the angle and $r$ is the radius of the circle. It is a constant function which makes sense because the points are always $r$ units away from the origin of the circle. However, Woobles have a periodic wobble that gives it a wobbly appearance. We can borrow the classic periodic function $cosine$ and get a particular wooble using $f(t)= r + \frac{r}{100}cos(5t)$
 
-![](https://raw.githubusercontent.com/asweingarten/woobles/master//readme/Figure3b.png)
+![](https://raw.githubusercontent.com/asweingarten/woobles/master//readme/figure3b.png)
 
 On the left is a unit circle ($f(t) = 1$) and on the right is a Wooble ($f(t)= r + \frac{r}{100}cos(5t)$)
 
@@ -60,7 +61,7 @@ To achieve the final result:
 
 - $M(r) = \frac{r}{75}$ for all Woobles
 - $P=p$ where $p$ $\epsilon$ $[\frac{\pi}{4}, \pi]$
-- $F = f$ where $f$ $\epsilon$ $[4, 8]$ 
+- $F = f$ where $f$ $\epsilon$ $[4, 8]$
 
 ![](https://raw.githubusercontent.com/asweingarten/woobles/master//readme/stroked-woobles.png)
 
@@ -72,7 +73,7 @@ The colors for Woobles are sampled from the Hue, Saturation, and Luminosity (HSL
 
 Three sets of colors are generated: colors with bright luminosity, colors with light luminosity, and colors with dark luminosity. For each Wooble, one of these sets is sampled for a color. The bright colors are used as accents and have a constant probability of $P_{bright}=0.1$. The other two sets are a little more complicated.
 
-Lighter colors appear more often closer to the center of the image and darker colors appear more often towards the ends of the image. To achieve this the probability of light colors is $P_{light}=(1 - P_{bright})  - x$ where $x=(1 - P_{bright})\frac{woobleNumber}{totalWoobles}$ and $P_{dark}=x$. After each Wooble is drawn (starting with the smallest one in the center) it becomes slightly more likely to pick a dark color. 
+Lighter colors appear more often closer to the center of the image and darker colors appear more often towards the ends of the image. To achieve this the probability of light colors is $P_{light}=(1 - P_{bright})  - x$ where $x=(1 - P_{bright})\frac{woobleNumber}{totalWoobles}$ and $P_{dark}=x$. After each Wooble is drawn (starting with the smallest one in the center) it becomes slightly more likely to pick a dark color.
 
 In this image, the light and dark colors are sampled from `HueBlue` and the bright bolors are sampled from `HueRandom`
 
@@ -82,11 +83,9 @@ In this image, the light and dark colors are sampled from `HueBlue` and the brig
 
 ## Finishing the Shot
 
-After the shaping and coloring of the Woobles, I select a particular region of the image. I liked the regions where you cannot see an entire Wooble because it directs attention towards the interaction between Woobles. In the case of the image at the top of this post, it is roughly the bottom left quadrant of the image. 
+After the shaping and coloring of the Woobles, I select a particular region of the image. I liked the regions where you cannot see an entire Wooble because it directs attention towards the interaction between Woobles. In the case of the image at the top of this post, it is roughly the bottom left quadrant of the image.
 
-Everything until this point was done in Haskell using the diagrams library. The final touch was to add some Gaussian noise to give the piece materiality. I used the freely available [imagemagick](https://www.imagemagick.org/) program and the exact command can be found in the [repo](https://github.com/asweingarten/woobles).
-
-
+Everything until this point was done in Haskell using the diagrams library. The final touch was to add some Gaussian noise to give the piece materiality. I used the freely available [imagemagick](https://www.imagemagick.org/) program and the exact command can be found in the repo in `addNoise.sh`.
 
 
 

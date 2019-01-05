@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- Begin Jekyll SEO tag v2.5.0 -->
-<title>Making Woobles | woobles</title>
+<title>woobles | Wooble = (circle, wobble)</title>
 <meta name="generator" content="Jekyll v3.7.4" />
-<meta property="og:title" content="Making Woobles" />
+<meta property="og:title" content="woobles" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Wooble = (circle, wobble)" />
 <meta property="og:description" content="Wooble = (circle, wobble)" />
@@ -16,10 +16,10 @@
 <meta property="og:url" content="http://localhost:4000/" />
 <meta property="og:site_name" content="woobles" />
 <script type="application/ld+json">
-{"name":"woobles","description":"Wooble = (circle, wobble)","@type":"WebSite","url":"http://localhost:4000/","headline":"Making Woobles","@context":"http://schema.org"}</script>
+{"name":"woobles","description":"Wooble = (circle, wobble)","@type":"WebSite","url":"http://localhost:4000/","headline":"woobles","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <link rel="stylesheet" href="/assets/css/style.css?v=a8c6f922b217c3f440ec370e6710b8bcc424be35">
+    <link rel="stylesheet" href="/assets/css/style.css?v=0a9f27dc17b54466bee4795827b3eb7310423698">
     <!--[if lt IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
@@ -43,7 +43,18 @@
       </header>
       <section>
 
-      <h1 id="making-woobles">Making Woobles</h1>
+      <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      inlineMath: [['$','$']]
+    }
+  });
+</script>
+
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<h1 id="making-woobles">Making Woobles</h1>
 
 <p><img src="https://raw.githubusercontent.com/asweingarten/woobles/master//readme/testMonoG.png" alt="woobles" /></p>
 
@@ -60,7 +71,7 @@
 
 <p><img src="https://raw.githubusercontent.com/asweingarten/woobles/master//readme/inspo-sm.jpg" alt="inspiration" /></p>
 
-<p>**Image 2: “Wobbly Ringz” by **<a href="https://np.reddit.com/user/jawknee400">jawknee400</a> (<a href="https://np.reddit.com/r/generative/comments/a0pfe1/wobbly_ringz/">source</a>)</p>
+<p><strong>“Wobbly Ringz” by</strong> <a href="https://np.reddit.com/user/jawknee400">jawknee400</a> (<a href="https://np.reddit.com/r/generative/comments/a0pfe1/wobbly_ringz/">source</a>)</p>
 
 <p>I saw this image on <a href="https://np.reddit.com/r/generative/">/r/generative</a> and was immediately taken by it. I resolved to recreate it using a software library that I’ve wanted to learn called <a href="https://archives.haskell.org/projects.haskell.org/diagrams/">diagrams</a>.</p>
 
@@ -72,7 +83,7 @@
 
 <p>A useful definition of a circle is in the <a href="https://en.wikipedia.org/wiki/Polar_coordinate_system">polar coordinate system</a> where the points of the circle are specified as a function of the angle:  $f(t) = r$. Where $t$ is the angle and $r$ is the radius of the circle. It is a constant function which makes sense because the points are always $r$ units away from the origin of the circle. However, Woobles have a periodic wobble that gives it a wobbly appearance. We can borrow the classic periodic function $cosine$ and get a particular wooble using $f(t)= r + \frac{r}{100}cos(5t)$</p>
 
-<p><img src="https://raw.githubusercontent.com/asweingarten/woobles/master//readme/Figure3b.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/asweingarten/woobles/master//readme/figure3b.png" alt="" /></p>
 
 <p>On the left is a unit circle ($f(t) = 1$) and on the right is a Wooble ($f(t)= r + \frac{r}{100}cos(5t)$)</p>
 
@@ -126,7 +137,7 @@ The images below demonstrate what varying these parameters looks like.</p>
 
 <p>After the shaping and coloring of the Woobles, I select a particular region of the image. I liked the regions where you cannot see an entire Wooble because it directs attention towards the interaction between Woobles. In the case of the image at the top of this post, it is roughly the bottom left quadrant of the image.</p>
 
-<p>Everything until this point was done in Haskell using the diagrams library. The final touch was to add some Gaussian noise to give the piece materiality. I used the freely available <a href="https://www.imagemagick.org/">imagemagick</a> program and the exact command can be found in the <a href="https://github.com/asweingarten/woobles">repo</a>.</p>
+<p>Everything until this point was done in Haskell using the diagrams library. The final touch was to add some Gaussian noise to give the piece materiality. I used the freely available <a href="https://www.imagemagick.org/">imagemagick</a> program and the exact command can be found in the repo in <code class="highlighter-rouge">addNoise.sh</code>.</p>
 
 
 
