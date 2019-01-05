@@ -29,7 +29,7 @@ A useful definition of a circle is in the [polar coordinate system](https://en.w
 
 On the left is a unit circle ($f(t) = 1$) and on the right is a Wooble ($f(t)= r + \frac{r}{100}cos(5t)$)
 
-The $cos$ term is parameterized by 3 values. The first is how big the wobble can get, * **M**agnitude*. The second is how quickly the $cos$ term oscillates between $-1$ and $1$, * **F**requency*. The final one is where in the wobble the function begins, ***P**hase*. Henceforth, I'll refer to a 3-tuple of (Magnitude, Frequency, Phase) as a *Wobble*.
+The $cos$ term is parameterized by 3 values. The first is how big the wobble can get, ***M**agnitude*. The second is how quickly the $cos$ term oscillates between $-1$ and $1$, ***F**requency*. The final one is where in the wobble the function begins, ***P**hase*. Henceforth, I'll refer to a 3-tuple of (Magnitude, Frequency, Phase) as a *Wobble*.
 $$
 f(t) = r * Mcos(F*t + P)
 $$
