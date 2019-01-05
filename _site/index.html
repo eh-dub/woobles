@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Making Woobles | woobles</title>
+<meta name="generator" content="Jekyll v3.7.4" />
+<meta property="og:title" content="Making Woobles" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Wooble = (circle, wobble)" />
+<meta property="og:description" content="Wooble = (circle, wobble)" />
+<link rel="canonical" href="http://localhost:4000/" />
+<meta property="og:url" content="http://localhost:4000/" />
+<meta property="og:site_name" content="woobles" />
+<script type="application/ld+json">
+{"name":"woobles","description":"Wooble = (circle, wobble)","@type":"WebSite","url":"http://localhost:4000/","headline":"Making Woobles","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/assets/css/style.css?v=a8c6f922b217c3f440ec370e6710b8bcc424be35">
+    <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1><a href="http://localhost:4000/">woobles</a></h1>
+        
+        
+
+        <p>Wooble = (circle, wobble)</p>
+
+        
+        <p class="view"><a href="http://github.com/asweingarten/woobles">View the Project on GitHub <small>asweingarten/woobles</small></a></p>
+        
+
+        
+
+        
+      </header>
+      <section>
+
+      <h1 id="making-woobles">Making Woobles</h1>
+
+<p><img src="https://raw.githubusercontent.com/asweingarten/woobles/master//readme/testMonoG.png" alt="woobles" /></p>
+
+<p>In this post I will explain the generative art techniques used to create “Woobles”. First, I will explain the math behind a single Wooble. Then I’ll discuss stacking Woobles including shape and color selection. Finally, I’ll discuss the post-processing on the image to get the final framing and texture.</p>
+
+<p>Keywords:</p>
+
+<ul>
+  <li>Generative Art. Art that in whole or in part has been created with the use of an autonomous system (<a href="https://en.wikipedia.org/wiki/Generative_art">wikipedia</a>).</li>
+  <li>Programming.  The act of instructing computers to perform tasks (<a href="https://en.wikipedia.org/wiki/Computer_programming">wikipedia</a>).</li>
+</ul>
+
+<h2 id="inspiration">Inspiration</h2>
+
+<p><img src="https://raw.githubusercontent.com/asweingarten/woobles/master//readme/inspo-sm.jpg" alt="inspiration" /></p>
+
+<p>**Image 2: “Wobbly Ringz” by **<a href="https://np.reddit.com/user/jawknee400">jawknee400</a> (<a href="https://np.reddit.com/r/generative/comments/a0pfe1/wobbly_ringz/">source</a>)</p>
+
+<p>I saw this image on <a href="https://np.reddit.com/r/generative/">/r/generative</a> and was immediately taken by it. I resolved to recreate it using a software library that I’ve wanted to learn called <a href="https://archives.haskell.org/projects.haskell.org/diagrams/">diagrams</a>.</p>
+
+<blockquote>
+  <p><strong>diagrams</strong> is a <em>powerful</em>, <em>flexible</em>, <em>declarative</em> domain-specific language for creating vector graphics, using the <a href="http://haskell.org/">Haskell programming language</a>.</p>
+</blockquote>
+
+<h2 id="from-circles-to-woobles">From Circles to Woobles</h2>
+
+<p>A useful definition of a circle is in the <a href="https://en.wikipedia.org/wiki/Polar_coordinate_system">polar coordinate system</a> where the points of the circle are specified as a function of the angle:  $f(t) = r$. Where $t$ is the angle and $r$ is the radius of the circle. It is a constant function which makes sense because the points are always $r$ units away from the origin of the circle. However, Woobles have a periodic wobble that gives it a wobbly appearance. We can borrow the classic periodic function $cosine$ and get a particular wooble using $f(t)= r + \frac{r}{100}cos(5t)$</p>
+
+<p><img src="https://raw.githubusercontent.com/asweingarten/woobles/master//readme/Figure3b.png" alt="" /></p>
+
+<p>On the left is a unit circle ($f(t) = 1$) and on the right is a Wooble ($f(t)= r + \frac{r}{100}cos(5t)$)</p>
+
+<p>The $cos$ term is parameterized by 3 values. The first is how big the wobble can get, <em>__M__agnitude</em>. The second is how quickly the $cos$ term oscillates between $-1$ and $1$, <em>__F__requency</em>. The final one is where in the wobble the function begins, <em>__P__hase</em>. Henceforth, I’ll refer to a 3-tuple of (Magnitude, Frequency, Phase) as a <em>Wobble</em>.
+<script type="math/tex">f(t) = r * Mcos(F*t + P)</script>
+The images below demonstrate what varying these parameters looks like.</p>
+
+<p>Frequency: <img src="https://raw.githubusercontent.com/asweingarten/woobles/master//readme/frequency.png" alt="" /></p>
+
+<p>Magnitude: <img src="https://raw.githubusercontent.com/asweingarten/woobles/master//readme/magnitude.png" alt="" /></p>
+
+<p>Phase:          <img src="https://raw.githubusercontent.com/asweingarten/woobles/master//readme/phase.png" alt="" /></p>
+
+<p>@TODO: Interactive Visualization</p>
+
+<h2 id="relations-between-woobles">Relations Between Woobles</h2>
+
+<p>The final image is a stack of Woobles. In this section, I’ll discuss what was done to make the stacking interesting in terms of Wobbles and Colors.</p>
+
+<h3 id="wobbles">Wobbles</h3>
+
+<p>If we use the same Wobble for every Wooble, we get concentric Woobles.</p>
+
+<p><img src="https://raw.githubusercontent.com/asweingarten/woobles/master//readme/same-woobles.png" alt="" /></p>
+
+<p>Technically, the Wobbles only share the same frequency and phase. The magnitude of the Wobbles are getting bigger as the radius increases <em>i.e.</em> magnitude is a function of a radius $M(r) = \frac{r}{75}$ . However, the Magnitude function is constant across Woobles.</p>
+
+<p>To achieve the final result:</p>
+
+<ul>
+  <li>$M(r) = \frac{r}{75}$ for all Woobles</li>
+  <li>$P=p$ where $p$ $\epsilon$ $[\frac{\pi}{4}, \pi]$</li>
+  <li>$F = f$ where $f$ $\epsilon$ $[4, 8]$</li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/asweingarten/woobles/master//readme/stroked-woobles.png" alt="" /></p>
+
+<h3 id="colors">Colors</h3>
+
+<p>The colors for Woobles are sampled from the Hue, Saturation, and Luminosity (HSL) color space. Specifically I use the <code class="highlighter-rouge">randomColor</code> function from the Haskell package <code class="highlighter-rouge">palette</code> (<a href="http://hackage.haskell.org/package/palette">link</a>). It takes a Hue and a Luminosity range (<code class="highlighter-rouge">LumBright</code>, <code class="highlighter-rouge">LumLight</code>, and <code class="highlighter-rouge">LumDark</code>) and samples a color.</p>
+
+<p>Three sets of colors are generated: colors with bright luminosity, colors with light luminosity, and colors with dark luminosity. For each Wooble, one of these sets is sampled for a color. The bright colors are used as accents and have a constant probability of $P_{bright}=0.1$. The other two sets are a little more complicated.</p>
+
+<p>Lighter colors appear more often closer to the center of the image and darker colors appear more often towards the ends of the image. To achieve this the probability of light colors is $P_{light}=(1 - P_{bright})  - x$ where $x=(1 - P_{bright})\frac{woobleNumber}{totalWoobles}$ and $P_{dark}=x$. After each Wooble is drawn (starting with the smallest one in the center) it becomes slightly more likely to pick a dark color.</p>
+
+<p>In this image, the light and dark colors are sampled from <code class="highlighter-rouge">HueBlue</code> and the bright bolors are sampled from <code class="highlighter-rouge">HueRandom</code></p>
+
+<p><img src="https://raw.githubusercontent.com/asweingarten/woobles/master//readme/colors.png" alt="woobles" /></p>
+
+<h2 id="finishing-the-shot">Finishing the Shot</h2>
+
+<p>After the shaping and coloring of the Woobles, I select a particular region of the image. I liked the regions where you cannot see an entire Wooble because it directs attention towards the interaction between Woobles. In the case of the image at the top of this post, it is roughly the bottom left quadrant of the image.</p>
+
+<p>Everything until this point was done in Haskell using the diagrams library. The final touch was to add some Gaussian noise to give the piece materiality. I used the freely available <a href="https://www.imagemagick.org/">imagemagick</a> program and the exact command can be found in the <a href="https://github.com/asweingarten/woobles">repo</a>.</p>
+
+
+
+      </section>
+      <footer>
+        
+        <p>This project is maintained by <a href="http://github.com/asweingarten">asweingarten</a></p>
+        
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="/assets/js/scale.fix.js"></script>
+    
+  </body>
+</html>

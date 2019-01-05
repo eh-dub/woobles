@@ -1,0 +1,65 @@
+name:                woobles
+version:             0.1.0.0
+github:              "asweingarten/woobles"
+license:             BSD3
+author:              "Ariel Weingarten"
+maintainer:          "asweingarten"
+copyright:           "2018 Ariel Weingarten"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/asweingarten/woobles#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- cairo
+- colour
+- vector
+- random-source
+- random-fu
+- mtl
+- rvar
+- transformers
+- linear
+- time
+- directory
+- diagrams
+- diagrams-lib
+- diagrams-contrib
+- diagrams-svg
+- diagrams-cairo
+- diagrams-core
+- palette
+- hsnoise
+- split
+
+
+executables:
+  woobles-exe:
+    main:                Main.hs
+    source-dirs:         [app, src]
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -Wall
+
+tests:
+  woobles-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - woobles
