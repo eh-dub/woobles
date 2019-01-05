@@ -1,8 +1,6 @@
-# Woobles
-![Woobles](https://raw.githubusercontent.com/asweingarten/woobles/master/readme/woobles.png)
 # Making Woobles
 
-![woobles](testMonoG.png)
+![woobles](https://raw.githubusercontent.com/asweingarten/woobles/master//readme/testMonoG.png)
 
 **Image 1:** Woobles
 
@@ -15,7 +13,7 @@ Keywords:
 
 ## Inspiration
 
-![inspiration](https://raw.githubusercontent.com/asweingarten/woobles/master/readme/inspo-sm.jpg)
+![inspiration](https://raw.githubusercontent.com/asweingarten/woobles/master//readme/inspo-sm.jpg)
 
 **Image 2: "Wobbly Ringz" by **[jawknee400](https://np.reddit.com/user/jawknee400) ([source](https://np.reddit.com/r/generative/comments/a0pfe1/wobbly_ringz/))
 
@@ -27,7 +25,7 @@ I saw this image on [/r/generative](https://np.reddit.com/r/generative/) and was
 
 A useful definition of a circle is in the [polar coordinate system](https://en.wikipedia.org/wiki/Polar_coordinate_system) where the points of the circle are specified as a function of the angle:  $f(t) = r$. Where $t$ is the angle and $r$ is the radius of the circle. It is a constant function which makes sense because the points are always $r$ units away from the origin of the circle. However, Woobles have a periodic wobble that gives it a wobbly appearance. We can borrow the classic periodic function $cosine$ and get a particular wooble using $f(t)= r + \frac{r}{100}cos(5t)$
 
-![](https://raw.githubusercontent.com/asweingarten/woobles/master/readme/Figure3b.png)
+![](https://raw.githubusercontent.com/asweingarten/woobles/master//readme/Figure3b.png)
 
 On the left is a unit circle ($f(t) = 1$) and on the right is a Wooble ($f(t)= r + \frac{r}{100}cos(5t)$)
 
@@ -37,13 +35,13 @@ f(t) = r * Mcos(F*t + P)
 $$
 The images below demonstrate what varying these parameters looks like.
 
-Frequency: ![](https://raw.githubusercontent.com/asweingarten/woobles/master/readme/frequency.png)
+Frequency: ![](https://raw.githubusercontent.com/asweingarten/woobles/master//readme/frequency.png)
 
 
 
-Magnitude: ![](https://raw.githubusercontent.com/asweingarten/woobles/master/readme/magnitude.png)
+Magnitude: ![](https://raw.githubusercontent.com/asweingarten/woobles/master//readme/magnitude.png)
 
-Phase:          ![](https://raw.githubusercontent.com/asweingarten/woobles/master/readme/phase.png)
+Phase:          ![](https://raw.githubusercontent.com/asweingarten/woobles/master//readme/phase.png)
 
 @TODO: Interactive Visualization
 
@@ -55,7 +53,7 @@ The final image is a stack of Woobles. In this section, I'll discuss what was do
 
 If we use the same Wobble for every Wooble, we get concentric Woobles.
 
-![](https://raw.githubusercontent.com/asweingarten/woobles/master/readme/same-woobles.png)
+![](https://raw.githubusercontent.com/asweingarten/woobles/master//readme/same-woobles.png)
 
 Technically, the Wobbles only share the same frequency and phase. The magnitude of the Wobbles are getting bigger as the radius increases *i.e.* magnitude is a function of a radius $M(r) = \frac{r}{75}$ . However, the Magnitude function is constant across Woobles.
 
@@ -65,7 +63,7 @@ To achieve the final result:
 - $P=p$ where $p$ $\epsilon$ $[\frac{\pi}{4}, \pi]$
 - $F = f$ where $f$ $\epsilon$ $[4, 8]$ 
 
-![](https://raw.githubusercontent.com/asweingarten/woobles/master/readme/stroked-woobles.png)
+![](https://raw.githubusercontent.com/asweingarten/woobles/master//readme/stroked-woobles.png)
 
 
 
@@ -79,7 +77,7 @@ Lighter colors appear more often closer to the center of the image and darker co
 
 In this image, the light and dark colors are sampled from `HueBlue` and the bright bolors are sampled from `HueRandom`
 
-![woobles](https://raw.githubusercontent.com/asweingarten/woobles/master/readme/colors.png)
+![woobles](https://raw.githubusercontent.com/asweingarten/woobles/master//readme/colors.png)
 
 
 
