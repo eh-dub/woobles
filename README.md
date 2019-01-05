@@ -24,7 +24,7 @@ I saw this image on [/r/generative](https://np.reddit.com/r/generative/) and was
 
 A useful definition of a circle is in the [polar coordinate system](https://en.wikipedia.org/wiki/Polar_coordinate_system) where the points of the circle are specified as a function of the angle:  $f(t) = r$. Where $t$ is the angle and $r$ is the radius of the circle. It is a constant function which makes sense because the points are always $r$ units away from the origin of the circle. However, Woobles have a periodic wobble that gives it a wobbly appearance. We can borrow the classic periodic function $cosine$ and get a particular wooble using $f(t)= r + \frac{r}{100}cos(5t)$
 
-![](https://raw.githubusercontent.com/asweingarten/woobles/master//readme/Figure3b.png)
+![](https://raw.githubusercontent.com/asweingarten/woobles/master//readme/figure3b.png)
 
 On the left is a unit circle ($f(t) = 1$) and on the right is a Wooble ($f(t)= r + \frac{r}{100}cos(5t)$)
 
