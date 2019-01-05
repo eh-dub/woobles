@@ -15,21 +15,39 @@ import Linear.V2
 import Diagrams.Backend.Cairo
 import Diagrams.Size
 import Diagrams.Prelude
+import Data.Colour.Palette.Types
+import Data.Colour.Palette.RandomColor
 
 main :: IO ()
-main =
-  --art
-  strokedWoobles
-  -- do
-  --   pure ()
-    -- renderCairo "out/figures/same-woobles.png" (dims $ V2 600 300) $ wooblesVariation
-    --
-    -- renderCairo "out/figures/magnitude.png" (dims $ V2 400 100) magnitude
-    -- renderCairo "out/figures/frequency.png" (dims $ V2 400 100) frequency
-    -- renderCairo "out/figures/phase.png" (dims $ V2 400 100) phase
+main = do
+  art
+  pure ()
 
-    -- renderCairo "out/figures/fmp.png" (dims $ V2 1200 500) fNmNp
-    --
+
+art :: IO()
+art = do
+  seed <- round . (*1000) <$> getPOSIXTime
+  let rsrc = mkStdGen seed
+
+  let radii  = [0.1 :: Double, 0.45 .. 70]
+  let numWoobles = length radii
+  let (freqs, rsrc')  = runState (replicateM numWoobles $ runRVar (uniform (4 :: Double) 8) StdRandom) rsrc
+  let (phases, rsrc'') = runState (replicateM numWoobles $ runRVar (uniform ((pi :: Double)/4.0) pi) StdRandom) rsrc'
+
+  colors <- myColors HueGreen HuePurple HuePurple numWoobles
+  let woobles = getZipList $
+              (\c r f p -> wooble' r (Wobble f (r/75) p) c)
+                <$> coerce colors
+                <*> coerce radii
+                <*> coerce freqs
+                <*> coerce phases
+  let diagram = foldr (\d acc -> center d `atop` acc) mempty woobles
+  let curatedRegion = rectEnvelope (p2 (48, -40)) (r2 (40, 40))
+
+  renderCairo "out/test.png" (dims $ V2 1600 900) (diagram # bg black # curatedRegion)
+
+  pure ()
+
 strokedWoobles :: IO()
 strokedWoobles = do
   seed <- round . (*1000) <$> getPOSIXTime
@@ -50,32 +68,6 @@ strokedWoobles = do
   renderCairo "out/figures/stroked-woobles.png" (dims $ V2 300 300) (diagram # bg white)
 
   pure ()
-
-art :: IO()
-art = do
-  seed <- round . (*1000) <$> getPOSIXTime
-  let rsrc = mkStdGen seed
-
-  let radii  = [0.1 :: Double, 0.45 .. 70]
-  let numWoobles = length radii
-  let (freqs, rsrc')  = runState (replicateM numWoobles $ runRVar (uniform (4 :: Double) 8) StdRandom) rsrc
-  let phases = evalState (replicateM numWoobles $ runRVar (uniform ((pi :: Double)/4.0) pi) StdRandom) rsrc'
-
-  colors <- myColors numWoobles
-  let woobles = getZipList $
-              (\c r f p -> wooble' r (Wobble f (r/75) p) c)
-                <$> coerce colors
-                <*> coerce radii
-                <*> coerce freqs
-                <*> coerce phases
-  let diagram = foldr (\d acc -> center d `atop` acc) mempty woobles
-  let curatedRegion = rectEnvelope (p2 (-48, -40)) (r2 (40, 40))
-
-  renderCairo "out/test.png" (dims $ V2 1600 900) (diagram # bg black # curatedRegion)
-
-  pure ()
-
-
 {-
   - Make: recreate pieces you've seen
   - Think: original ideas you have for pieces

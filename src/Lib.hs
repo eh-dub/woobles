@@ -37,11 +37,11 @@ wooble (cx, cy) r (Wobble f m p) lineWeight color  =
 wooble' :: Double -> Wobble -> Colour Double -> Diagram B
 wooble' r w c = wooble (0, 0) r w none c
 
-myColors :: Int -> IO [Kolor]
-myColors numWoobles = do
-  brightColors <- replicateM numWoobles $ randomColor HueRandom LumBright
-  lightColors  <- replicateM numWoobles $ randomColor HuePurple LumLight
-  darkColors   <- replicateM numWoobles $ randomColor HuePurple LumDark
+myColors :: Hue -> Hue -> Hue -> Int -> IO [Kolor]
+myColors bright light dark numWoobles = do
+  brightColors <- replicateM numWoobles $ randomColor bright LumBright
+  lightColors  <- replicateM numWoobles $ randomColor light LumLight
+  darkColors   <- replicateM numWoobles $ randomColor dark LumDark
   let brightProb = 0.1 :: Double
   flip runRVar StdRandom
    . traverse (\x -> do
