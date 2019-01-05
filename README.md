@@ -2,7 +2,6 @@
 
 ![woobles](https://raw.githubusercontent.com/asweingarten/woobles/master//readme/testMonoG.png)
 
-**Image 1:** Woobles
 
 In this post I will explain the generative art techniques used to create "Woobles". First, I will explain the math behind a single Wooble. Then I'll discuss stacking Woobles including shape and color selection. Finally, I'll discuss the post-processing on the image to get the final framing and texture.
 
