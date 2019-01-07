@@ -1,3 +1,3 @@
-# Changelog for filling-boxes
+# Changelog for woobles
 
 ## Unreleased changes
