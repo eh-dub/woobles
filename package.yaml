@@ -1,10 +1,10 @@
 name:                woobles
 version:             0.1.0.0
-github:              "asweingarten/woobles"
+github:              "githubuser/woobles"
 license:             BSD3
 author:              "Ariel Weingarten"
 maintainer:          "asweingarten"
-copyright:           "2018 Ariel Weingarten"
+copyright:           "2019 Ariel Weingarten"
 
 extra-source-files:
 - README.md
@@ -39,19 +39,22 @@ dependencies:
 - diagrams-cairo
 - diagrams-core
 - palette
-- hsnoise
 - split
+- MonadRandom
 
+library:
+  source-dirs: src
 
 executables:
   woobles-exe:
     main:                Main.hs
-    source-dirs:         [app, src]
+    source-dirs:         app
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
-    - -Wall
+    dependencies:
+    - woobles
 
 tests:
   woobles-test:

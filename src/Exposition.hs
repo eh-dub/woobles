@@ -1,11 +1,21 @@
 module Exposition where
+{- THIS FILE GENERATES DIAGRAMS USED IN THE README.
+   THERE IS NOTHING HERE YOU NEED FOR GENERATING WOOBLES
+-}
 
 import Lib
 
 import Data.List.Split
+import Data.Time.Clock.POSIX
 
 import Diagrams.Prelude
 import Diagrams.Backend.Cairo
+
+import Control.Monad.State
+import Control.Applicative
+import Data.Coerce
+import Data.Random
+import Data.Random.Source.StdGen
 
 magnitude :: Diagram B
 magnitude = woobleVariation wobbles
@@ -97,3 +107,23 @@ wooblesVariation ws =
   . fmap woobles'
   $ ws
 
+strokedWoobles :: IO()
+strokedWoobles = do
+  seed <- round . (*1000) <$> getPOSIXTime
+  let rsrc = mkStdGen seed
+
+  let radii  = [0.1 :: Double, 0.45 .. 10]
+  let numWoobles = length radii
+  let (freqs, rsrc')  = runState (replicateM numWoobles $ runRVar (uniform (4 :: Double) 8) StdRandom) rsrc
+  let phases = evalState (replicateM numWoobles $ runRVar (uniform ((pi :: Double)/4.0) pi) StdRandom) rsrc'
+
+  let woobles = getZipList $
+              (\r f p -> wooble (0,0) r (Wobble f (r/75) p) medium white)
+                <$>  coerce radii
+                <*>  coerce freqs
+                <*>  coerce phases
+  let diagram = foldr (\d acc -> center d `atop` acc) mempty woobles
+
+  renderCairo "out/figures/stroked-woobles.png" (dims $ V2 300 300) (diagram # bg white)
+
+  pure ()
