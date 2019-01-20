@@ -6,7 +6,8 @@ import Control.Monad.State
 import Control.Monad.Trans.Random
 
 import Diagrams.Prelude
-import Diagrams.Backend.Cairo
+-- import Diagrams.Backend.Cairo
+import Diagrams.Backend.SVG
 
 import Data.Colour.Palette.Types
 import Data.Colour.Palette.RandomColor

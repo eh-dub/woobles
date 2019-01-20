@@ -1,7 +1,10 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ApplicativeDo #-}
+
 module Main where
 
 import Lib
-import Exposition
+import Orphan
 
 import Data.Random
 import Data.Random.Source.StdGen
@@ -12,26 +15,35 @@ import Control.Monad.State
 import Control.Applicative
 
 import Linear.V2
-import Diagrams.Backend.Cairo
+-- import Diagrams.Backend.Cairo
+import Diagrams.Backend.SVG
 import Diagrams.Size
 import Diagrams.Prelude
 import Data.Colour.Palette.Types
 
+import Web.Suavemente
+import Web.Suavemente.Diagrams
+
 main :: IO ()
 main = do
-  art
-  pure ()
-
-
-art :: IO()
-art = do
+  -- art
   seed <- round . (*1000) <$> getPOSIXTime
   let rsrc = mkStdGen seed
-  let diagram = theWoobles rsrc HueGreen HuePurple HuePurple
-  let curatedRegion = rectEnvelope (p2 (-48, -40)) (r2 (40, 40))
-  renderCairo "out/test.png" (dims $ V2 1600 900) (diagram # bg black # curatedRegion)
+  suavemente sendDiagram $ do
+    brightHue <- enumDropdown ("Bright Hue"::String) HueBlue
+    pure $ art rsrc brightHue
+  -- pure ()
 
-  pure ()
+
+art :: StdGen -> Hue -> Diagram B
+art rsrc brightHue = do
+  let
+      diagram       = theWoobles rsrc brightHue HuePurple HuePurple
+      curatedRegion = rectEnvelope (p2 (-48, -40)) (r2 (40, 40))
+    in
+    diagram # curatedRegion # bg black
+  -- renderCairo "out/test.png" (dims $ V2 1600 900) (diagram # bg black # curatedRegion)
+
 
 theWoobles :: StdGen -> Hue -> Hue -> Hue -> Diagram B
 theWoobles rsrc bright light' dark =

@@ -41,6 +41,11 @@ dependencies:
 - palette
 - split
 - MonadRandom
+- suavemente
+- blaze-markup
+- aeson
+- text
+- unordered-containers
 
 library:
   source-dirs: src
