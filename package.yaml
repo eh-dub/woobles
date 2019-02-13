@@ -41,6 +41,7 @@ dependencies:
 - palette
 - split
 - MonadRandom
+- optparse-applicative
 
 library:
   source-dirs: src

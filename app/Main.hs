@@ -1,3 +1,7 @@
+{-# LANGUAGE FlexibleInstances         #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE TypeFamilies #-}
+
 module Main where
 
 import Lib
@@ -11,27 +15,40 @@ import Data.Time.Clock.POSIX
 import Control.Monad.State
 import Control.Applicative
 
-import Linear.V2
-import Diagrams.Backend.Cairo
+-- import Linear.V2
+-- import Diagrams.Backend.Cairo
+import Diagrams.Backend.Cairo.CmdLine
+import Diagrams.Backend.CmdLine
 import Diagrams.Size
-import Diagrams.Prelude
+import Diagrams.Prelude hiding ((<>), option)
 import Data.Colour.Palette.Types
+
+import Options.Applicative
+
+newtype Artable a = Artable a
+data ArtOpts = ArtOpts Int
+
+instance Parseable ArtOpts where
+  parser = ArtOpts <$> option auto (long "num-woobles" <> help "set the # of woobles")
+
+instance Mainable (Artable (QDiagram Cairo V2 Double Any)) where
+  type MainOpts (Artable (QDiagram Cairo V2 Double Any)) = (MainOpts (QDiagram Cairo V2 Double Any), ArtOpts)
+  mainRender (opts, ArtOpts n) (Artable d) = mainRender opts ((if (n > 10) then reflectX else id) d)
 
 main :: IO ()
 main = do
-  art
-  pure ()
-
-
-art :: IO()
-art = do
   seed <- round . (*1000) <$> getPOSIXTime
   let rsrc = mkStdGen seed
-  let diagram = theWoobles rsrc HueGreen HuePurple HuePurple
-  let curatedRegion = rectEnvelope (p2 (-48, -40)) (r2 (40, 40))
-  renderCairo "out/test.png" (dims $ V2 1600 900) (diagram # bg black # curatedRegion)
+  let diagram = art rsrc
+  mainWith (Artable diagram)
 
-  pure ()
+
+art :: StdGen -> Diagram B
+art rsrc =
+  diagram # curatedRegion # bg black
+    where
+      diagram = theWoobles rsrc HueGreen HuePurple HuePurple
+      curatedRegion = rectEnvelope (p2 (-48, -40)) (r2 (40, 40))
 
 theWoobles :: StdGen -> Hue -> Hue -> Hue -> Diagram B
 theWoobles rsrc bright light' dark =
