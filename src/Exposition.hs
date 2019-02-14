@@ -3,7 +3,7 @@ module Exposition where
    THERE IS NOTHING HERE YOU NEED FOR GENERATING WOOBLES
 -}
 
-import Lib
+import Wooble.Core
 
 import Data.List.Split
 import Data.Time.Clock.POSIX
